@@ -65,7 +65,7 @@ function board() {
             for(var tile_idx=0; tile_idx < tile_values.length; tile_idx++) {
                 var tile_value = tile_values[tile_idx];
                 var tile_resource = tile_resources[tile_idx];
-                this.tiles.push([tile_value, tile_resource]); /* TODO: Create a tile object! */
+                this.tiles.push(new tile(tile_value, tile_resource));
             }
         }
         console.log("Board generated!");
