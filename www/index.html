@@ -10,6 +10,7 @@
   <script type="text/javascript" src="js/tile.js"></script>
   <script type="text/javascript" src="js/board.js"></script>
   <script type="text/javascript" src="js/game.js"></script>
+  <script type="text/javascript" src="js/simulateboard.js"></script>
   <script type="text/javascript">
     // Tail-scroll function for logwindow.
     var chart;
@@ -173,9 +174,16 @@
 
     /* Try to bind to the simulator hooks */
     var button = parent.document.getElementById("bigredbutton");
-    button.onmousedown = function () { game.button_down()}; // Somehow directly using game.button_down does not seem to work.
-    button.onmouseup = function () { game.button_up()};
+    /* If button is not found, we are not running in the sim-sim */
+    if(button) {
+        button.onmousedown = function () { game.button_down()}; // Somehow directly using game.button_down does not seem to work.
+        button.onmouseup = function () { 
+                                game.button_up(); 
+                                parent.document.getElementById("board").innerHTML = get_svg(game.board);};
 
+        parent.document.getElementById("board").innerHTML = "";
+    }
+    
   </script>
   <style type="text/css">
    body {
@@ -243,6 +251,8 @@
     </div>
     <br />
     <div id="total">Press the button once to begin!</div>
+    <br />
+    <div id="svgboard">&nbsp;</div>
   </div>
   <div id="rightcol">
     <div id="chartContainer" style="height: 200px; width: 100%; float: left;"></div>

@@ -95,6 +95,7 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
     this.button_up = function(seed) {
         if(this.state == STATE_UNINITIALIZED) {
             this.board = new board();
+            this.board.initialize_random();
             this.msg_write("Generated board. Place tiles according to the colors of the LEDs.");
             this.update_btle();
             // Still placing tiles, but next time the button is pressed we just want to play!

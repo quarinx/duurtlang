@@ -50,6 +50,8 @@ for(var idx = 0; idx < tile_config.Resource_colors.length; idx++) {
 function tile(number, resource) {
     this.number = number;
     this.resource = resource;
+    this.place = false;
+    this.highlight = false;
     
     this.led_state = 0;
     
@@ -67,12 +69,18 @@ function tile(number, resource) {
         resource_leds = Resource_leds[this.resource];
         
         resource_intensity = tile_config.dimmed_intensity;
+        this.highlight = false;
+        this.place = false;
         
-        if(this.number == highlight_number || this.resource == highlight_resource)
+        if(this.number == highlight_number || this.resource == highlight_resource){
             resource_intensity = tile_config.highlighted_intensity;
+            this.highlight = true;
+        }
         
-        if(place)
+        if(place) {
             resource_intensity = tile_config.place_intensity;
+            this.place = true
+        }
         
         for(var led_idx = 0; led_idx < this.led_state.length; led_idx++)
             this.led_state[led_idx] += parseInt(resource_intensity * resource_leds[led_idx]);
@@ -84,5 +92,5 @@ function tile(number, resource) {
             retval.push(this.led_state[led_idx])
     }
     /* On init, run the update function */
-    this.update_state(-1, -1);
+    this.update_state(-1, -1, true);
 };

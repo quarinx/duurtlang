@@ -120,7 +120,7 @@ function board() {
     this.update_state = function(highlight_number, highlight_resource, place){
         for(var tileidx = 0; tileidx<this.tiles.length; tileidx++){
             tile = this.tiles[tileidx];
-            tile.update_state(highlight_number, highlight_resource, place=False);
+            tile.update_state(highlight_number, highlight_resource, place=false);
         }
     }
 };
