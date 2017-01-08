@@ -1,49 +1,251 @@
-<!DOCTYPE html>
-<!--
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
 <html>
-    <head>
-        <!--
-        Customize this policy to fit your own app's needs. For more guidance, see:
-            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
-        Some notes:
-            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
-            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
-            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
-                * Enable inline JS: add 'unsafe-inline' to default-src
-        -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
-        <meta name="format-detection" content="telephone=no">
-        <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-        <link rel="stylesheet" type="text/css" href="css/index.css">
-        <title>Hello World</title>
-    </head>
-    <body>
-        <div class="app">
-            <h1>Apache Cordova</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
-        </div>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
-    </body>
+ <head>
+  <title>Kolonisten van FS</title>
+  <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript" src="js/jquery.dice.js"></script>
+  <script type="text/javascript" src="js/jquery.canvasjs.min.js"></script>
+  <script type="text/javascript" src="js/seedrandom.js"></script>
+  <script type="text/javascript" src="js/crc32.js"></script>
+  <script type="text/javascript" src="js/tile.js"></script>
+  <script type="text/javascript" src="js/tile.js"></script>
+  <script type="text/javascript" src="js/board.js"></script>
+  <script type="text/javascript" src="js/game.js"></script>
+  <script type="text/javascript">
+    // Tail-scroll function for logwindow.
+    var chart;
+    var debug=true;
+    
+    function debug_log(message) {
+      if(debug) console.log(message);
+    }
+    
+    function log_line(message) {
+      $("<div />").text(message).appendTo("#tail");
+      var height = $("#tail").get(0).scrollHeight;
+      $("#tail")[0].scrollTop = height;
+    }
+    
+    function parse_cmd(idx, cmd) {
+      /* Our commands can have 0, 1 or 2 arguments.
+         Split up here and call handleCMD */
+      debug_log(cmd)
+      if(cmd['args'].length == 0) {
+        handleCMD(cmd['command']);
+      }
+      else if(cmd['args'].length == 1) {
+        handleCMD(cmd['command'],
+                  cmd['args'][0]);
+      }
+      else {
+        handleCMD(cmd['command'],
+                  cmd['args'][0],
+                  cmd['args'][1]);
+      }
+    }
+    /*
+    function parse_json(data) {
+        debug_log(data.length);
+        $.each(data, parse_cmd);
+        setTimeout(poll_inner, 100);
+    };
+   
+   function poll_inner(){
+     $.ajax({
+        dataType: "json",
+        url: "http://localhost:8080/api/commands.json",
+        success: parse_json,
+        error: restart_poll,
+        timeout: 10000
+        });
+    }
+   
+    function restart_poll(){
+     setTimeout(poll_inner, 1000);
+    }
+    
+    poll_inner();*/
+    
+    function update_chart(data) {
+      for(var charpoint = 0; charpoint < 11; charpoint++) {
+        var dicepoint = charpoint + 2;
+        chart.options.data[0].dataPoints[charpoint] = {x: dicepoint, y:data[dicepoint]};
+      }
+      chart.render();
+    }
+    
+    
+    $(document).ready(function()
+    {
+      // Init Graph
+      var options = {
+        title: {
+          text: "Dice statistics"
+        },
+        animationEnabled: true,
+        data: [
+          {
+            type: "column", //change it to line, area, bar, pie, etc
+            dataPoints: [
+              { x: 2, y: 0 },
+              { x: 3, y: 0 },
+              { x: 4, y: 0 },
+              { x: 5, y: 0 },
+              { x: 6, y: 0 },
+              { x: 7, y: 0 },
+              { x: 8, y: 0 },
+              { x: 9, y: 0 },
+              { x: 10, y: 0 },
+              { x: 11, y: 0 },
+              { x: 12, y: 0 },
+            ]
+          }
+        ],
+       //width: 380,
+       //height: 200,
+      };
+      chart = new CanvasJS.Chart("chartContainer", options);
+      chart.render();
+      
+    });
+
+    function setTotal(num)
+    {
+      $('#current_number').html('Current number: '+num);
+    }
+    
+    function play_sound(soundfile){
+        var snd = new Audio(soundfile);
+        snd.play();
+    }
+    
+    
+    function handleCMD(command, arg1, arg2) {
+        switch(command) {
+            case "DICE_ROLL":
+                debug_log("Rolling the dice!");
+                $("#dice0").dice();
+                $("#dice1").dice();
+                break;
+            case "DICE_SET":
+                debug_log("Dice rolled, result: " + arg1.toString() + ", " + arg2.toString());
+                $("#dice0").dice({'juggle' : false, 'number' : arg1});
+                $("#dice1").dice({'juggle' : false, 'number' : arg2});
+                $("#total").html('Total: ' + (arg1 + arg2));
+                break;
+            case "MSG_WRITE":
+                debug_log("Setting message to: " + arg1)
+                $("#total").html(arg1);
+                break;
+            case "LOG":
+                debug_log("Adding logline: " + arg1);
+                log_line(arg1);
+                break;
+            case "UPDATE_GRAPH":
+                debug_log("Updating graph");
+                update_chart(arg1);
+                break;
+            case "PLAY_SOUND":
+                debug_log("Playing sound file: " + arg1);
+                play_sound(arg1)
+                break;
+            default:
+                debug_log("Unknown command: " + command);
+            }
+        }
+
+    function dice_roll() {
+        $("#dice0").dice();
+        $("#dice1").dice();
+    }
+    
+    function dice_set(dice1, dice2) {
+        $("#dice0").dice({'juggle' : false, 'number' : dice1});
+        $("#dice1").dice({'juggle' : false, 'number' : dice2});
+        $("#total").html('Total: ' + (dice1 + dice2));
+    }
+    
+    function msg_write(msg) {
+        $("#total").html(msg);
+    }
+        
+    
+    var game = new catan_game(dice_roll, dice_set, msg_write, log_line, update_chart, play_sound);
+
+  </script>
+  <style type="text/css">
+   body {
+       background: url("img/carbonbg.png");
+       color: white;
+       cursor: none;
+   }
+      
+   h1 {
+     text-align: center;
+   }
+
+   div#dicewrap {
+     height: 120px;
+   }
+
+   div#dice0 {
+     float: left;
+     width: 120px;
+     height: 120px;
+     margin-right: 30px;
+     background: url("img/nodice.png");
+   }
+   
+   div#dice1 {
+     float: left;
+     width: 120px;
+     height: 120px;
+     margin-right: 30px;
+     background: url("img/nodice.png");
+   }
+
+   div#total {
+     margin-top: 15px;
+     font-weight: bold;
+     font-size: large;
+   }
+   
+   #tail {
+     margin-top: 220px;
+     border: 2px solid blue;
+     height: 160px;
+     width: 100%;
+     overflow: hidden;
+     font-size: small;
+     padding: 10px;
+   }
+   
+   #leftcol {
+      float: left;
+      width: 45%;
+    }
+   #rightcol {
+      float: left;
+      width: 45%;
+    }
+  </style>
+ </head>
+ <body>
+  <h1>Kolonisten van FS</h1>
+  <div id="leftcol">
+    <div id="dicewrap">
+     <div id="dice0"></div>
+     <div id="dice1"></div>
+    </div>
+    <br />
+    <div id="total">Press the button once to begin!</div>
+  </div>
+  <div id="rightcol">
+    <div id="chartContainer" style="height: 200px; width: 100%; float: left;"></div>
+    <div id="tail">
+      <div>Logging started.</div>
+    </div>
+  </div>
+  <script type="text/javascript" src="cordova.js"></script>
+  <script type="text/javascript" src="js/index.js"></script>
+ </body>
 </html>

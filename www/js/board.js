@@ -112,7 +112,15 @@ function board() {
         return true;
     }
     
+    /** Updates the LED state.
+     *      @param highlight_number:    If equal to our own number, highlight the tile.
+     *      @param highlight_resource:  If equal to our own resource, highlight the tile.
+     *      @param place:               If evaluates to true, highlight all tiles a little bit.
+    **/
+    this.update_state = function(highlight_number, highlight_resource, place){
+        for(var tileidx = 0; tileidx<this.tiles.length; tileidx++){
+            tile = this.tiles[tileidx];
+            tile.update_state(highlight_number, highlight_resource, place=False);
+        }
+    }
 };
-
-var curr_board = new board();
-curr_board.initialize_random();
