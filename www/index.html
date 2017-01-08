@@ -171,6 +171,11 @@
     
     var game = new catan_game(dice_roll, dice_set, msg_write, log_line, update_chart, play_sound);
 
+    /* Try to bind to the simulator hooks */
+    var button = parent.document.getElementById("bigredbutton");
+    button.onmousedown = function () { game.button_down()}; // Somehow directly using game.button_down does not seem to work.
+    button.onmouseup = function () { game.button_up()};
+
   </script>
   <style type="text/css">
    body {
