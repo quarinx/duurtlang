@@ -15,10 +15,10 @@ var makeCRCTable = function(){
         crcTable[n] = c;
     }
     return crcTable;
-}
+};
 
 /* crc32 of a little-endian integer */
-var crc32 = function(inp) {
+var crc32_int = function(inp) {
     var crcTable = window.crcTable || (window.crcTable = makeCRCTable());
     var crc = 0 ^ (-1);
 
@@ -27,5 +27,18 @@ var crc32 = function(inp) {
         inp = inp >> 8;
         crc = (crc >>> 8) ^ crcTable[(crc ^ byte) & 0xFF];
     }
+    return (crc ^ (-1)) >>> 0;
+};
+
+
+/* crc32 of a string */
+var crc32 = function(str) {
+    var crcTable = window.crcTable || (window.crcTable = makeCRCTable());
+    var crc = 0 ^ (-1);
+
+    for (var i = 0; i < str.length; i++ ) {
+        crc = (crc >>> 8) ^ crcTable[(crc ^ str.charCodeAt(i)) & 0xFF];
+    }
+
     return (crc ^ (-1)) >>> 0;
 };

@@ -5,20 +5,20 @@
  */
 
 playlist = [
-"sounds/Brekend_nieuws.mp3",
-"sounds/debiteuren_lachen.mp3",
-"sounds/debiteuren_stiften_4.mp3",
-"sounds/ins_zimmer_hinein.mp3",
-"sounds/raarrr.mp3",
-"sounds/RemboRemboStrippokeravond.mp3",
-"sounds/tampert_kriminalpolizei.mp3",
-]
+'sounds/Brekend_nieuws.mp3',
+'sounds/debiteuren_lachen.mp3',
+'sounds/debiteuren_stiften_4.mp3',
+'sounds/ins_zimmer_hinein.mp3',
+'sounds/raarrr.mp3',
+'sounds/RemboRemboStrippokeravond.mp3',
+'sounds/tampert_kriminalpolizei.mp3',
+];
 
 var STATE_UNINITIALIZED = 0;
 var STATE_PLAYING = 2;
 
 function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_sound) {
-    console.log("Creating catan game!");
+    console.log('Creating catan game!');
     /* Save the callback functions. */
     this.dice_roll = dice_roll;
     this.dice_set = dice_set;
@@ -26,16 +26,20 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
     this.log = function(msg) { log(msg); console.log(msg) };
     this.update_graph = update_graph;
     this.play_sound = play_sound;
+    var this_game = this;
     
     
     // Application Constructor
     this.reset = function () {
-        this.state = STATE_UNINITIALIZED;
-        //this.players = []; /* Not yet supported */ 
-        this.overall_stats = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        this.hash_rnd = true;
-        this.board = false;
-    }
+        this_game.state = STATE_UNINITIALIZED;
+        //this_game.players = []; /* Not yet supported */ 
+        this_game.player_stats = {};
+        this_game.hash_rnd = true;
+        this_game.board = false;
+        this_game.players = [];
+        this_game.board = new board();
+        this_game.turn = 0;
+    };
     this.reset();
     
     /** get_random_int
@@ -48,6 +52,8 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
      * @param low           : Lowest possible number that can be returned (low itself is included)
      * @param high          : Highest possible number that can be returned (high itself is *not* included)
      * @param rand_number   : Optional integer that is used to generate the number i.s.o. the current time.
+     * 
+     * @return : The random integer.
      **/
     this.get_random_int = function(low, high, rand_number) {
         /* If we don't get a random_number as input, use the current time. */
@@ -55,12 +61,12 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
             var now = new Date();
             rand_number = now.valueOf();
         }
-        modulo = high - low
-        if(this.hash_rnd) {
-            rand_number = crc32(rand_number);
+        modulo = high - low;
+        if(this_game.hash_rnd) {
+            rand_number = crc32_int(rand_number);
         }
         return (rand_number % modulo) + low;
-    }
+    };
     
     /** button_down
      * Function shall be executed when the red button is pressed.
@@ -71,17 +77,17 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
      * @param seed: Seed value for random MP3.
      *  */
     this.button_down = function(seed) {
-        if(this.state == STATE_PLAYING) {
+        if(this_game.state == STATE_PLAYING) {
             if(arguments.length > 0)
-                mp3idx = this.get_random_int(0, playlist.length, seed);
+                mp3idx = this_game.get_random_int(0, playlist.length, seed);
             else
-                mp3idx = this.get_random_int(0, playlist.length);
-            this.play_sound(playlist[mp3idx]);
-            this.dice_roll();
-            this.msg_write("Rolling the dice!");
-            this.log("Playing sound-effect. Seed: " + seed + ", MP3 id=" + mp3idx +", MP3 filename=" + playlist[mp3idx]);
+                mp3idx = this_game.get_random_int(0, playlist.length);
+            this_game.play_sound(playlist[mp3idx]);
+            this_game.dice_roll();
+            this_game.msg_write('Rolling the dice!');
+            this_game.log('Playing sound-effect. Seed: ' + seed + ', MP3 id=' + mp3idx +', MP3 filename=' + playlist[mp3idx]);
         }
-    }
+    };
     
     
     /** button_up
@@ -93,43 +99,85 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
      * @param seed: Seed value for dice roll.
      *  */
     this.button_up = function(seed) {
-        if(this.state == STATE_UNINITIALIZED) {
-            this.board = new board();
-            this.board.initialize_random();
-            this.msg_write("Generated board. Place tiles according to the colors of the LEDs.");
-            this.update_btle();
-            // Still placing tiles, but next time the button is pressed we just want to play!
-            this.state = STATE_PLAYING;
-            this.log("Generated board. Seed: " + seed);
+        if(this_game.state == STATE_UNINITIALIZED) {
+            this_game.new_game('fixed', ['All players']);
         }
-        else if(this.state == STATE_PLAYING){
+        else if(this_game.state == STATE_PLAYING){
             // Use only one shot of randomness, since otherwise the two will be related.
             if(arguments.length > 0)
-                var dices = this.get_random_int(0, 36, seed);
+                var dices = this_game.get_random_int(0, 36, seed);
             else
-                var dices = this.get_random_int(0, 36);
-            dice1 = parseInt(dices % 6);
-            dice2 = parseInt(dices / 6);
+                var dices = this_game.get_random_int(0, 36);
+            var dice1 = parseInt(dices % 6);
+            var dice2 = parseInt(dices / 6);
             
-            this.dice_set(dice1+1, dice2+1);
-            msg = "Button released! Dice faces: " + (dice1+1) + ", " + (dice2+1);
-            this.log(msg)
+            this_game.dice_set(dice1+1, dice2+1);
+            msg = 'Button released! Dice faces: ' + (dice1+1) + ', ' + (dice2+1);
+            this_game.log(msg);
             
-            dice_sum = dice1 + dice2;
-            this.overall_stats[dice_sum] += 1;
-            graphdata = {}
-            for(var dice=0; dice<this.overall_stats.length; dice++){
-                count = this.overall_stats[dice];
-                graphdata[dice+2] = count
+            var dice_sum = dice1 + dice2;
+            this_game.player_stats[this_game.turn][dice_sum] += 1;
+            graphdata = [];
+            for(var i = 0; i<this_game.players.length; i++) {
+                graphdata.push({name: this_game.players[i], data: this_game.player_stats[i]});
             }
-            this.update_graph(graphdata);
             //Highlight selected tiles.
-            this.board.update_state(dice1 + dice2 + 2, false);
-            this.update_btle();
-            this.log("Rolled the dice. Seed: " + seed + ", Random number=" + dices +", dice faces=" + (dice1+1) + "," + (dice2+1));
+            this_game.board.update_state(dice1 + dice2 + 2, false);
+            this_game.update_btle();
+            this_game.log(this_game.get_player() + ' rolled the dice. Seed: ' + seed + ', Random number=' + dices +', dice faces=' + (dice1+1) + ',' + (dice2+1));
+            this_game._next_turn();
+            this_game.update_graph(graphdata);
         }
-    }
+    };
     
+    this._next_turn = function() {
+        this_game.turn++;
+        this_game.turn %= this_game.players.length;
+    };
+    
+    this.get_player = function() {
+        return this_game.players[this_game.turn];
+    };
+    
+    this.new_game = function(board_type, players, seed) {
+        var seed_str;
+        if(typeof seed === 'undefined' || seed === '') {
+            var now = new Date();
+            seed_str = '' + now.valueOf();
+        }
+        else {
+            seed_str = '' + seed;
+        }
+        
+        this_game.log('Generating ' + board_type + ' board. Seed: ' + seed_str);
+        this_game.players = players;        
+        var seed_int = crc32(seed_str);
+        console.log('Seed-int: ' + seed_int);
+        
+        switch (board_type)
+        {
+          default       : throw new Error('Unsupported board type');    break;
+          case 'fixed'  : this_game.board.initialize_fixed(seed_int);   break;
+          case 'ordered': this_game.board.initialize_ordered(seed_int); break;
+          case 'random' : this_game.board.initialize_random(seed_int);  break;
+        }
+        
+        this_game.player_stats = {};
+        for(var i = 0; i < this_game.players.length; i++) {
+            this_game.player_stats[i] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        }
+        
+        this_game.msg_write('Generated board. Place tiles according to the colors of the LEDs.');
+        this_game.update_btle();
+        // Still placing tiles, but next time the button is pressed we just want to play!
+        this_game.state = STATE_PLAYING;
+        this_game.turn = 0;
+        graphdata = [];
+        for(var i = 0; i<this_game.players.length; i++) {
+            graphdata.push({name: this_game.players[i], data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]});
+        }
+        this_game.update_graph(graphdata);
+    };
     /** update_btle
      * 
      *  Send the current state of the board via BTLE to the board itself
@@ -137,4 +185,4 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
     this.update_btle = function() {
         //Not implemented.
     };
-};
+}

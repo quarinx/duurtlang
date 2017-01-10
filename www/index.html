@@ -2,8 +2,9 @@
  <head>
   <title>Kolonisten van FS</title>
   <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
-  <script type="text/javascript" src="js/jquery.dice.js"></script>
+  <script type="text/javascript" src="js/dice.js"></script>
   <script type="text/javascript" src="js/jquery.canvasjs.min.js"></script>
+  <script type="text/javascript" src="js/Chart.js"></script>
   <script type="text/javascript" src="js/seedrandom.js"></script>
   <script type="text/javascript" src="js/crc32.js"></script>
   <script type="text/javascript" src="js/tile.js"></script>
@@ -12,102 +13,102 @@
   <script type="text/javascript" src="js/game.js"></script>
   <script type="text/javascript" src="js/simulateboard.js"></script>
   <script type="text/javascript">
+    var bgcolor = [
+        'rgba(255, 0, 0, 0.2)',
+        'rgba(0, 0, 255, 0.2)',
+        'rgba(0, 255, 0, 0.2)',
+        'rgba(255, 255, 0, 0.2)'
+        ];
+    var bordercolor = [
+        'rgba(255, 0, 0, 1)',
+        'rgba(0, 0, 255, 1)',
+        'rgba(0, 255, 0, 1)',
+        'rgba(255, 255, 0, 1)'
+        ];
+    
     // Tail-scroll function for logwindow.
     var chart;
     var debug=true;
+    var dice0;
+    var dice1;
     
     function debug_log(message) {
       if(debug) console.log(message);
     }
     
-    function log_line(message) {
-      $("<div />").text(message).appendTo("#tail");
-      var height = $("#tail").get(0).scrollHeight;
-      $("#tail")[0].scrollTop = height;
-    }
-    
-    function parse_cmd(idx, cmd) {
-      /* Our commands can have 0, 1 or 2 arguments.
-         Split up here and call handleCMD */
-      debug_log(cmd)
-      if(cmd['args'].length == 0) {
-        handleCMD(cmd['command']);
-      }
-      else if(cmd['args'].length == 1) {
-        handleCMD(cmd['command'],
-                  cmd['args'][0]);
-      }
-      else {
-        handleCMD(cmd['command'],
-                  cmd['args'][0],
-                  cmd['args'][1]);
-      }
-    }
-    /*
-    function parse_json(data) {
-        debug_log(data.length);
-        $.each(data, parse_cmd);
-        setTimeout(poll_inner, 100);
-    };
-   
-   function poll_inner(){
-     $.ajax({
-        dataType: "json",
-        url: "http://localhost:8080/api/commands.json",
-        success: parse_json,
-        error: restart_poll,
-        timeout: 10000
-        });
-    }
-   
-    function restart_poll(){
-     setTimeout(poll_inner, 1000);
-    }
-    
-    poll_inner();*/
-    
-    function update_chart(data) {
-      for(var charpoint = 0; charpoint < 11; charpoint++) {
-        var dicepoint = charpoint + 2;
-        chart.options.data[0].dataPoints[charpoint] = {x: dicepoint, y:data[dicepoint]};
-      }
-      chart.render();
-    }
-    
-    
     $(document).ready(function()
     {
       // Init Graph
       var options = {
-        title: {
-          text: "Dice statistics"
-        },
-        animationEnabled: true,
-        data: [
-          {
-            type: "column", //change it to line, area, bar, pie, etc
-            dataPoints: [
-              { x: 2, y: 0 },
-              { x: 3, y: 0 },
-              { x: 4, y: 0 },
-              { x: 5, y: 0 },
-              { x: 6, y: 0 },
-              { x: 7, y: 0 },
-              { x: 8, y: 0 },
-              { x: 9, y: 0 },
-              { x: 10, y: 0 },
-              { x: 11, y: 0 },
-              { x: 12, y: 0 },
+        scales: {
+            xAxes: [{
+                stacked: true
+            }],
+            yAxes: [{
+                stacked: true
+            }]
+        }
+        };
+      var data = {
+            labels: ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+            datasets: [
+                {
+                    label: "My First dataset",
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255,99,132,1)',
+                    borderWidth: 1,
+                    data: [65, 59, 80, 81, 56, 55, 40],
+                },
+                {
+                    label: "My Second dataset",
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    data: [65, 59, 80, 81, 56, 55, 40],
+                }
             ]
-          }
-        ],
-       //width: 380,
-       //height: 200,
-      };
-      chart = new CanvasJS.Chart("chartContainer", options);
-      chart.render();
-      
+        };
+      var ctx = document.getElementById("myChart");
+      chart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: options
+        });
+        
+       dice0 = new dice($("#dice0"));
+       dice1 = new dice($("#dice1"));
+       dice1.juggleinterval = 30;
+       
+       document.getElementById("nrplayers").onkeyup=update_players;
+       document.getElementById("decrementplayers").onclick=decrementplayers;
+       document.getElementById("incrementplayers").onclick=incrementplayers;
+       document.getElementById("startgame").onclick=new_game;
+       document.getElementById("closenew").onclick=new_game_close;
+       document.getElementById("opennew").onclick=new_game_open;
+       document.getElementById("dice0").onmousedown = function () { game.button_down()}; // Somehow directly using game.button_down does not seem to work.
+       document.getElementById("dice0").onmouseup = function () { game.button_up()}; // Somehow directly using game.button_up does not seem to work.
+       document.getElementById("dice1").onmousedown = function () { game.button_down()}; // Somehow directly using game.button_down does not seem to work.
+       document.getElementById("dice1").onmouseup = function () { game.button_up()}; // Somehow directly using game.button_up does not seem to work.
+       
+       
+       update_players();
     });
+
+    function update_chart(data) {
+        var datasets = [];
+        for(i=0; i<data.length; i++) {
+            datasets.push( {
+                label : data[i].name,
+                backgroundColor : bgcolor[i],
+                borderColor : bordercolor[i],
+                borderWidth : 1,
+                data : data[i].data
+            });
+        };
+        chart.data.datasets = datasets;
+        chart.update();
+        $("#nextturn").html("Next player: " + game.get_player());
+    }
 
     function setTotal(num)
     {
@@ -119,77 +120,109 @@
         snd.play();
     }
     
-    
-    function handleCMD(command, arg1, arg2) {
-        switch(command) {
-            case "DICE_ROLL":
-                debug_log("Rolling the dice!");
-                $("#dice0").dice();
-                $("#dice1").dice();
-                break;
-            case "DICE_SET":
-                debug_log("Dice rolled, result: " + arg1.toString() + ", " + arg2.toString());
-                $("#dice0").dice({'juggle' : false, 'number' : arg1});
-                $("#dice1").dice({'juggle' : false, 'number' : arg2});
-                $("#total").html('Total: ' + (arg1 + arg2));
-                break;
-            case "MSG_WRITE":
-                debug_log("Setting message to: " + arg1)
-                $("#total").html(arg1);
-                break;
-            case "LOG":
-                debug_log("Adding logline: " + arg1);
-                log_line(arg1);
-                break;
-            case "UPDATE_GRAPH":
-                debug_log("Updating graph");
-                update_chart(arg1);
-                break;
-            case "PLAY_SOUND":
-                debug_log("Playing sound file: " + arg1);
-                play_sound(arg1)
-                break;
-            default:
-                debug_log("Unknown command: " + command);
-            }
-        }
-
     function dice_roll() {
-        $("#dice0").dice();
-        $("#dice1").dice();
+        dice0.start_juggle();
+        dice1.start_juggle();
     }
     
-    function dice_set(dice1, dice2) {
-        $("#dice0").dice({'juggle' : false, 'number' : dice1});
-        $("#dice1").dice({'juggle' : false, 'number' : dice2});
-        $("#total").html('Total: ' + (dice1 + dice2));
+    function dice_set(val0, val1) {
+        dice0.set_face(val0);
+        dice1.set_face(val1);
+        $("#total").html('Total: ' + (val0 + val1));
     }
     
     function msg_write(msg) {
         $("#total").html(msg);
     }
-        
+    
+    function log_line(message) {
+      $("<div />").text(message).appendTo("#tail");
+      var height = $("#tail").get(0).scrollHeight;
+      $("#tail")[0].scrollTop = height;
+    }
+    
     
     var game = new catan_game(dice_roll, dice_set, msg_write, log_line, update_chart, play_sound);
 
+    
+    function decrementplayers() {
+        var input = $("#nrplayers")
+        var number = parseInt(input.val())
+        if(number > 1) {
+            number -= 1;
+        }
+        input.val(number);
+        update_players();
+    };
+    
+    function incrementplayers() {
+        var input = $("#nrplayers")
+        var number = parseInt(input.val())
+        if(number < 4) {
+            number += 1;
+        }
+        input.val(number);
+        update_players();
+    };
+    
+    function update_players() {
+        var input = $("#nrplayers")
+        var number = parseInt(input.val())
+        for(var i = 0; i < 4; i++) {
+            var box = $("#player" + i);
+            if(i < number) {
+                box.css('display', 'inline');
+            }
+            else {
+                box.css('display', 'none');
+            };
+        };
+     };
+     
+     function new_game() {
+        new_game_close();
+        var players = []
+        
+        var input = $("#nrplayers")
+        var number = parseInt(input.val())
+        for(var i = 0; i < number; i++) {
+            var box = $("#player" + i);
+            players.push(box.val());
+        };
+        var boardtype = $('input[name=gametype]:radio:checked').val();
+        var seed = $('#boardseed').val();
+        
+        game.new_game(boardtype, players, seed);
+        
+        /* Update simulator. This can fail so do last.*/
+        parent.document.getElementById("board").innerHTML = get_svg(game.board)
+        
+     }
+     
+    function new_game_close() {
+        var playerwindow = $("#newgame");
+        playerwindow.css('display', 'none');
+    };
+     
+    function new_game_open() {
+        var playerwindow = $("#newgame");
+        playerwindow.css('display', 'inline');
+    };
+     
     /* Try to bind to the simulator hooks */
     var button = parent.document.getElementById("bigredbutton");
     /* If button is not found, we are not running in the sim-sim */
-    if(button) {
+    if(! (typeof button === "undefined")) {
         button.onmousedown = function () { game.button_down()}; // Somehow directly using game.button_down does not seem to work.
-        button.onmouseup = function () { 
-                                game.button_up(); 
-                                parent.document.getElementById("board").innerHTML = get_svg(game.board);};
-
+        button.onmouseup = function () { game.button_up() };
+        game.update_btle = function () { parent.document.getElementById("board").innerHTML = get_svg(game.board)};
         parent.document.getElementById("board").innerHTML = "";
-    }
-    
+    };
   </script>
   <style type="text/css">
    body {
        background: url("img/carbonbg.png");
        color: white;
-       cursor: none;
    }
       
    h1 {
@@ -205,7 +238,7 @@
      width: 120px;
      height: 120px;
      margin-right: 30px;
-     background: url("img/nodice.png");
+     background: url("img/prettydice.png");
    }
    
    div#dice1 {
@@ -213,7 +246,7 @@
      width: 120px;
      height: 120px;
      margin-right: 30px;
-     background: url("img/nodice.png");
+     background: url("img/prettydice.png");
    }
 
    div#total {
@@ -240,6 +273,31 @@
       float: left;
       width: 45%;
     }
+    
+     /* The New Game window */
+    .newgame {
+        display: block; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        color: black;
+    }
+
+    /* Modal Content/Box */
+    .newgame-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+    }
+      
   </style>
  </head>
  <body>
@@ -252,15 +310,50 @@
     <br />
     <div id="total">Press the button once to begin!</div>
     <br />
+    <div id="nextturn"></div>
     <div id="svgboard">&nbsp;</div>
+    <div id="opennew">New Game!</div>
   </div>
   <div id="rightcol">
-    <div id="chartContainer" style="height: 200px; width: 100%; float: left;"></div>
+    <div id="chartContainer" style="height: 230px; width: 100%; float: left; background-color: white"><canvas id="myChart" width="400" height="200"></canvas></div>
     <div id="tail">
       <div>Logging started.</div>
     </div>
   </div>
-  <script type="text/javascript" src="cordova.js"></script>
+  
+    <!-- New Game -->
+    <div id="newgame" class="newgame">
+
+      <!-- Modal content -->
+      <div class="newgame-content">
+        <h2>New game</h2>
+        <p>
+        <input type="radio" name="gametype" value="fixed" id="fixedbtn" checked /><label for="fixedbtn">Fixed (Easy)</label><br>
+        <input type="radio" name="gametype" value="ordered" id="orderedbtn" /><label for="orderedbtn">Ordered (Meh)</label><br>
+        <input type="radio" name="gametype" value="random"  id="randombtn" /><label for="randombtn">Random (Hard)</label>
+        </p>
+        <p>
+        <label for="players">Number of players</label>
+        <input type="text" name="nrplayers" id="nrplayers" value="3" />
+        <img src="img/decrement.png" alt="-" id="decrementplayers" />
+        <img src="img/increment.png" alt="+" id="incrementplayers" />
+        </p>
+        <h3>Player names:</h3>
+        <p>
+        <input type="text" name="player0" id="player0" value="Player 0" /> <br />
+        <input type="text" name="player1" id="player1" value="Player 1" /> <br />
+        <input type="text" name="player2" id="player2" value="Player 2" /> <br />
+        <input type="text" name="player3" id="player3" value="Player 3" />
+        </p>
+        <h3>Random Seed</h3>
+        <p>Use this input to be able to re-create the board later on. <br />
+        Leave empty to use the current time as seed.</p>
+        <label for="boardseed">Random seed: </label>
+        <input type="text" name="boardseed" id="boardseed" value="" /> <br />
+        <input type="submit" id="startgame" value="Start!">
+        <div style="float:right"><input type="submit" id="closenew" value="Close"></div>
+        </div>
+  </div>
   <script type="text/javascript" src="js/index.js"></script>
  </body>
 </html>
