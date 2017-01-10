@@ -67,6 +67,16 @@ var board_config = {
                        'Bremsenspriets', 'Carbon', 'Alu_7075', 'Ziptie' ],
     resource_zero : 2, //'Woestijn' shall be matched with value 0. It is located at position 2 in the above 2 arrays.
 };
+
+function array_contains(array, item) {
+    for(var i = 0; i < array.length; i++){
+        if(array[i] == item) {
+            return true;
+        }
+    }
+    return false;
+}
+
 /**
  * The board.
  * @constructor
@@ -257,12 +267,12 @@ function board() {
         
         for(var tile_id = 0; tile_id < this_board.tiles.length; tile_id++) {
             var tile = this_board.tiles[tile_id];
-            if(board_config.disallow_adjecent.includes(tile.number)) {
+            if(array_contains(board_config.disallow_adjecent, tile.number)) {
                 for(var tile_adjecent_id = 0; 
                         tile_adjecent_id < board_config.adjecent_tiles[tile_id].length; 
                         tile_adjecent_id++){
                     tile_adjecent = board_config.adjecent_tiles[tile_id][tile_adjecent_id];
-                    if(board_config.disallow_adjecent.includes(this_board.tiles[tile_adjecent].number)){
+                    if(array_contains(board_config.disallow_adjecent, this_board.tiles[tile_adjecent].number)){
                         return false;
                     }
                 }
