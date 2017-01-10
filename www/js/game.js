@@ -63,7 +63,13 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
         }
         modulo = high - low;
         if(this_game.hash_rnd) {
-            rand_number = crc32_int(rand_number);
+            /* Strictly speaking, this is not fair. Lower numbers have a higher probability than
+             * numbers above max-(max % modulo), but the probability of even once reaching this 
+             * condition during the lifetime of the game is less than 0.01% for a 32-bit value */
+            var hashed = md5('' + rand_number);
+            rand_number = parseInt(hashed.slice(0,7), 16);
+            console.log("MD5 based random number: " + rand_number);
+            /* By the way, using the unhashed time is fair since there is no upper bound. */
         }
         return (rand_number % modulo) + low;
     };
@@ -151,8 +157,8 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
         
         this_game.log('Generating ' + board_type + ' board. Seed: ' + seed_str);
         this_game.players = players;        
-        var seed_int = crc32(seed_str);
-        console.log('Seed-int: ' + seed_int);
+        var hashed = md5(seed_str);
+        var seed_int = parseInt(hashed.slice(0,7), 16);
         
         switch (board_type)
         {
