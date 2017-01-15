@@ -1,6 +1,11 @@
 <html>
  <head>
   <title>Kolonisten van FS</title>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
   <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
   <script type="text/javascript" src="js/dice.js"></script>
   <script type="text/javascript" src="js/jquery.canvasjs.min.js"></script>
@@ -154,7 +159,7 @@
     
     function init_gui()
     { 
-      game = new catan_game(dice_roll, dice_set, msg_write, log_line, update_chart, play_sound);
+      game = new catan_game(dice_roll, dice_set, msg_write, log_line, update_chart, play_sound, app.sendData);
       // Init Graph
       var options = {
         scales: {
@@ -164,7 +169,8 @@
             yAxes: [{
                 stacked: true
             }]
-        }
+        },
+        maintainAspectRatio : false
         };
       var data = {
             labels: ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
@@ -285,7 +291,7 @@
     
      /* The New Game window */
     .newgame {
-        display: block; /* Hidden by default */
+        display: none; /* Hidden by default */
         position: fixed; /* Stay in place */
         z-index: 1; /* Sit on top */
         left: 0;
@@ -363,7 +369,7 @@
         <div style="float:right"><input type="submit" id="closenew" value="Close"></div>
         </div>
   </div>
-  <script type="text/javascript" src="js/index.js"></script>
-  <script type="text/javascript">init_gui()</script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
  </body>
 </html>

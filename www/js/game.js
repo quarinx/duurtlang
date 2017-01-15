@@ -17,7 +17,7 @@ playlist = [
 var STATE_UNINITIALIZED = 0;
 var STATE_PLAYING = 2;
 
-function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_sound) {
+function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_sound, send_data) {
     console.log('Creating catan game!');
     /* Save the callback functions. */
     this.dice_roll = dice_roll;
@@ -26,6 +26,7 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
     this.log = function(msg) { log(msg); console.log(msg) };
     this.update_graph = update_graph;
     this.play_sound = play_sound;
+    this.send_data = send_data;
     var this_game = this;
     
     
@@ -35,7 +36,6 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
         //this_game.players = []; /* Not yet supported */ 
         this_game.player_stats = {};
         this_game.hash_rnd = true;
-        this_game.board = false;
         this_game.players = [];
         this_game.board = new board();
         this_game.turn = 0;
@@ -83,12 +83,13 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
      * @param seed: Seed value for random MP3.
      *  */
     this.button_down = function(seed) {
+        if(arguments.length > 0)
+            mp3idx = this_game.get_random_int(0, playlist.length, seed);
+        else
+            mp3idx = this_game.get_random_int(0, playlist.length);
+        this_game.play_sound(playlist[mp3idx]);
+        
         if(this_game.state == STATE_PLAYING) {
-            if(arguments.length > 0)
-                mp3idx = this_game.get_random_int(0, playlist.length, seed);
-            else
-                mp3idx = this_game.get_random_int(0, playlist.length);
-            this_game.play_sound(playlist[mp3idx]);
             this_game.dice_roll();
             this_game.msg_write('Rolling the dice!');
             this_game.log('Playing sound-effect. Seed: ' + seed + ', MP3 id=' + mp3idx +', MP3 filename=' + playlist[mp3idx]);
@@ -189,6 +190,13 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
      *  Send the current state of the board via BTLE to the board itself
      **/
     this.update_btle = function() {
-        //Not implemented.
+        var data = new Uint8Array(1);
+        if(this_game.board.tiles[3].highlight) {
+            data[0] = 255;
+        }
+        else {
+            data[0] = 0;
+        }
+        this_game.send_data(data);
     };
 }

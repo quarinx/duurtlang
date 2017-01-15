@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.cordova.hellocordova" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>HelloCordova</name>
+<widget id="nl.isdeautoalaf.duurtlang" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Duurt Lang</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        Waarom duurt het toch zo verschrikkelijk lang? Dat is toch nergens voor nodig?
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
+    <author email="info@dutracing.nl" href="http://duurtlang.isdeautoalaf.nl">
+        Thijs Support Team
     </author>
-    <content src="http://duurtlang.isdeautoalaf.nl/app/master/www/index.html" />
+    <icon src="res/icon.png" />
+    <content src="index.html" />
     <plugin name="cordova-plugin-whitelist" spec="1" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
