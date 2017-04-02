@@ -246,13 +246,26 @@ function catan_game(gui, send_data) {
      *  Send the current state of the board via BTLE to the board itself
      **/
     this.update_btle = function() {
-        var data = new Uint8Array(1);
-        if(this_game.board.tiles[3].highlight) {
-            data[0] = 255;
-        }
-        else {
-            data[0] = 0;
-        }
-        this_game.send_data(data);
+        
+        for(var tileidx = 0; tileidx < 19; tileidx++) {
+            var data = new Uint8Array(14);
+            data[0] = tileidx;
+            data[1] = this_game.board.tiles[tileidx].number;
+            data[3] = 0xFF;
+            data[4] = 0xFF;
+            data[5] = 0x00;
+            data[6] = 0x00;
+            data[7] = 0xFF;
+            data[8] = this_game.tiles[tileidx].led_state[0];
+            data[9] = this_game.tiles[tileidx].led_state[1];
+            data[10] = this_game.tiles[tileidx].led_state[2];
+            data[11] = 0xFF;
+            data[12] = 0x00;
+            data[13] = 0x00;
+            data[14] = 0xFF;
+            
+            
+            this_game.send_data(data);
+        };
     };
 }
