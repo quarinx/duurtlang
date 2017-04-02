@@ -26,7 +26,7 @@ var tile_config = {
         ['Bremsenspriets'    , [128, 128,   0]],  // Geel
         ['Carbon'            , [255,   0,   0]],  // Rood
         ['Rozebutt'          , [120,  60,  60]],  // Roze
-        ['Alu_7075'          , [  0,   0, 255]],  // Wit
+        ['Alu_7075'          , [ 90,  90,  90]],  // Wit
         ['Ziptie'            , [  0, 255,   0]],  // Groen
     ],
     Resource_tiles : [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],

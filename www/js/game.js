@@ -254,11 +254,17 @@ function catan_game(gui, send_data) {
             var data = new Uint8Array(14);
             data[0] = tileidx;
             data[1] = this_game.board.tiles[tileidx].number;
-            data[2] = 0xFF; // num birhgtness
-            data[3] = 0xFF; // num r
-            data[4] = 0x00; // num g
-            data[5] = 0x00; // num b
-            data[6] = 0xFF; // resource brightness
+            data[3] = resource_leds[0];
+            data[4] = resource_leds[1];
+            data[5] = resource_leds[2];
+            if (this_game.board.tiles[tileidx].highlight) {
+                data[6] = 0xFF; // resource brightness
+                data[2] = 0xFF; // num birhgtness
+            }
+            else {
+                data[6] = 0x60;
+                data[2] = 0x60;
+            }
             data[7] = resource_leds[0];
             data[8] = resource_leds[1];
             data[9] = resource_leds[2];
@@ -269,6 +275,6 @@ function catan_game(gui, send_data) {
             
             
             this_game.send_data(data);
-        };
+        }
     };
 }
