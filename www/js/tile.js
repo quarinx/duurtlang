@@ -41,14 +41,7 @@ var Resource_leds = {};
 for(var idx = 0; idx < tile_config.Resource_colors.length; idx++) {
     resource = tile_config.Resource_colors[idx][0];
     color    = tile_config.Resource_colors[idx][1];
-    var leds = [];
-    for(var lednr = 0; lednr < tile_config.Resource_tiles; lednr++){
-        if(tile_config.Resource_tiles[lednr])
-            leds.concat(color);
-        else
-            leds.concat([0, 0, 0]);
-        }
-    Resource_leds[resource] = leds;
+    Resource_leds[resource] = color;
 }
  
 function tile(number, resource) {
@@ -71,7 +64,7 @@ function tile(number, resource) {
      ***/
     this.update_state = function(highlight_number, highlight_resource, place) {
         this_tile.led_state = tile_config.Number_leds[this_tile.number].slice(0);
-        var resource_leds = Resource_leds[this_tile.resource];
+        //var resource_leds = Resource_leds[this_tile.resource];
         
         var resource_intensity = tile_config.dimmed_intensity;
         this_tile.highlight = false;
@@ -87,12 +80,13 @@ function tile(number, resource) {
             this_tile.place = true
         }
         
-        for(var led_idx = 0; led_idx < this_tile.led_state.length; led_idx++)
-            this_tile.led_state[led_idx] += parseInt(resource_intensity * resource_leds[led_idx]);
+        //for(var led_idx = 0; led_idx < this_tile.led_state.length; led_idx++)
+        //    this_tile.led_state[led_idx] += parseInt(resource_intensity * resource_leds[led_idx]);
     };
     
     this.get_leds = function() {
-        return this_tile.led_state.slice(0);
+        return Resource_leds[this_tile.resource]
+        //return this_tile.led_state.slice(0);
     };
     /* On init, run the update function */
     this.update_state(-1, -1, true);
