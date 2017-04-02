@@ -1,236 +1,31 @@
 <html>
  <head>
   <title>Kolonisten van FS</title>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="msapplication-tap-highlight" content="no" />
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-  <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
-  <script type="text/javascript" src="js/dice.js"></script>
-  <script type="text/javascript" src="js/jquery.canvasjs.min.js"></script>
-  <script type="text/javascript" src="js/Chart.js"></script>
-  <script type="text/javascript" src="js/seedrandom.js"></script>
-  <script type="text/javascript" src="js/md5.js"></script>
-  <script type="text/javascript" src="js/tile.js"></script>
-  <script type="text/javascript" src="js/tile.js"></script>
-  <script type="text/javascript" src="js/board.js"></script>
-  <script type="text/javascript" src="js/game.js"></script>
-  <script type="text/javascript" src="js/simulateboard.js"></script>
-  <script type="text/javascript">
-    var bgcolor = [
-        'rgba(255, 0, 0, 0.2)',
-        'rgba(0, 0, 255, 0.2)',
-        'rgba(0, 255, 0, 0.2)',
-        'rgba(255, 255, 0, 0.2)'
-        ];
-    var bordercolor = [
-        'rgba(255, 0, 0, 1)',
-        'rgba(0, 0, 255, 1)',
-        'rgba(0, 255, 0, 1)',
-        'rgba(255, 255, 0, 1)'
-        ];
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
     
-    // Tail-scroll function for logwindow.
-    var chart;
-    var debug=true;
-    var dice0;
-    var dice1;
-    var game;
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
 
-    
-    function debug_log(message) {
-      if(debug) console.log(message);
-    }
-    
-
-    function update_chart(data) {
-        var datasets = [];
-        for(i=0; i<data.length; i++) {
-            datasets.push( {
-                label : data[i].name,
-                backgroundColor : bgcolor[i],
-                borderColor : bordercolor[i],
-                borderWidth : 1,
-                data : data[i].data
-            });
-        };
-        chart.data.datasets = datasets;
-        chart.update();
-        $("#nextturn").html("Next player: " + game.get_player());
-    }
-
-    function setTotal(num)
-    {
-      $('#current_number').html('Current number: '+num);
-    }
-    
-    function play_sound(soundfile){
-        var snd = new Audio(soundfile);
-        snd.play();
-    }
-    
-    function dice_roll() {
-        dice0.start_juggle();
-        dice1.start_juggle();
-    }
-    
-    function dice_set(val0, val1) {
-        dice0.set_face(val0);
-        dice1.set_face(val1);
-        $("#total").html('Total: ' + (val0 + val1));
-    }
-    
-    function msg_write(msg) {
-        $("#total").html(msg);
-    }
-    
-    function log_line(message) {
-      $("<div />").text(message).appendTo("#tail");
-      var height = $("#tail").get(0).scrollHeight;
-      $("#tail")[0].scrollTop = height;
-    }
-    
-    
-    
-    function decrementplayers() {
-        var input = $("#nrplayers")
-        var number = parseInt(input.val())
-        if(number > 1) {
-            number -= 1;
-        }
-        input.val(number);
-        update_players();
-    };
-    
-    function incrementplayers() {
-        var input = $("#nrplayers")
-        var number = parseInt(input.val())
-        if(number < 4) {
-            number += 1;
-        }
-        input.val(number);
-        update_players();
-    };
-    
-    function update_players() {
-        var input = $("#nrplayers")
-        var number = parseInt(input.val())
-        for(var i = 0; i < 4; i++) {
-            var box = $("#player" + i);
-            if(i < number) {
-                box.css('display', 'inline');
-            }
-            else {
-                box.css('display', 'none');
-            };
-        };
-     };
-     
-     function new_game() {
-        new_game_close();
-        var players = []
-        
-        var input = $("#nrplayers")
-        var number = parseInt(input.val())
-        for(var i = 0; i < number; i++) {
-            var box = $("#player" + i);
-            players.push(box.val());
-        };
-        var boardtype = $('input[name=gametype]:radio:checked').val();
-        var seed = $('#boardseed').val();
-        
-        game.new_game(boardtype, players, seed);
-        
-        /* Update simulator. This can fail so do last.*/
-        parent.document.getElementById("board").innerHTML = get_svg(game.board)
-        
-     }
-     
-    function new_game_close() {
-        var playerwindow = $("#newgame");
-        playerwindow.css('display', 'none');
-    };
-     
-    function new_game_open() {
-        var playerwindow = $("#newgame");
-        playerwindow.css('display', 'inline');
-    };
-    
-    function init_gui()
-    { 
-      game = new catan_game(dice_roll, dice_set, msg_write, log_line, update_chart, play_sound, app.sendData);
-      // Init Graph
-      var options = {
-        scales: {
-            xAxes: [{
-                stacked: true
-            }],
-            yAxes: [{
-                stacked: true
-            }]
-        },
-        maintainAspectRatio : false
-        };
-      var data = {
-            labels: ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
-            datasets: [
-                {
-                    label: "My First dataset",
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255,99,132,1)',
-                    borderWidth: 1,
-                    data: [65, 59, 80, 81, 56, 55, 40],
-                },
-                {
-                    label: "My Second dataset",
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1,
-                    data: [65, 59, 80, 81, 56, 55, 40],
-                }
-            ]
-        };
-      var ctx = document.getElementById("myChart");
-      chart = new Chart(ctx, {
-            type: 'bar',
-            data: data,
-            options: options
-        });
-        
-       dice0 = new dice($("#dice0"));
-       dice1 = new dice($("#dice1"));
-       dice1.juggleinterval = 30;
-       
-       document.getElementById("nrplayers").onkeyup=update_players;
-       document.getElementById("decrementplayers").onclick=decrementplayers;
-       document.getElementById("incrementplayers").onclick=incrementplayers;
-       document.getElementById("startgame").onclick=new_game;
-       document.getElementById("closenew").onclick=new_game_close;
-       document.getElementById("opennew").onclick=new_game_open;
-       document.getElementById("dice0").ontouchstart = function () { game.button_down()}; // Somehow directly using game.button_down does not seem to work.
-       document.getElementById("dice0").ontouchend = function () { game.button_up()}; // Somehow directly using game.button_up does not seem to work.
-       document.getElementById("dice1").ontouchstart = function () { game.button_down()}; // Somehow directly using game.button_down does not seem to work.
-       document.getElementById("dice1").ontouchend = function () { game.button_up()}; // Somehow directly using game.button_up does not seem to work.
-       
-       
-       update_players();
-        /* Try to bind to the simulator hooks */
-        var button = parent.document.getElementById("bigredbutton");
-        /* If button is not found, we are not running in the sim-sim */
-        if(! (typeof button === "undefined")) {
-            button.onmousedown = function () { game.button_down()}; // Somehow directly using game.button_down does not seem to work.
-            button.onmouseup = function () { game.button_up() };
-            game.update_btle = function () { parent.document.getElementById("board").innerHTML = get_svg(game.board)};
-            parent.document.getElementById("board").innerHTML = "";
-    };
-     
-    };
-  </script>
+    <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="js/dice.js"></script>
+    <script type="text/javascript" src="js/jquery.canvasjs.min.js"></script>
+    <script type="text/javascript" src="js/Chart.js"></script>
+    <script type="text/javascript" src="js/seedrandom.js"></script>
+    <script type="text/javascript" src="js/md5.js"></script>
+    <script type="text/javascript" src="js/tile.js"></script>
+    <script type="text/javascript" src="js/tile.js"></script>
+    <script type="text/javascript" src="js/board.js"></script>
+    <script type="text/javascript" src="js/game.js"></script>
+    <script type="text/javascript" src="js/simulateboard.js"></script>
+    <script type="text/javascript" src="js/gui.js"></script>
+    <script type="text/javascript" src="js/scoretable.js"></script>
   <style type="text/css">
    body {
        background: url("img/carbonbg.png");
        color: white;
+       position: relative;
    }
       
    h1 {
@@ -271,13 +66,17 @@
    }
    
    #tail {
-     margin-top: 220px;
-     border: 2px solid blue;
-     height: 160px;
-     width: 100%;
+     border: 3px solid blue;
+     height: 15px;
      overflow: hidden;
      font-size: small;
-     padding: 10px;
+     padding: 0px;
+     background-color: white;
+     color: black;
+     position: absolute;
+     bottom: 0px;
+     left: 0px;
+     right: 0px;
    }
    
    #leftcol {
@@ -331,9 +130,15 @@
   </div>
   <div id="rightcol">
     <div id="chartContainer" style="height: 230px; width: 100%; float: left; background-color: white"><canvas id="myChart" width="400" height="200"></canvas></div>
-    <div id="tail">
-      <div>Logging started.</div>
-    </div>
+  </div>
+  <div id="statsdiv">
+      <table id="stats" class="stats" cellspacing="0" width="100%">
+          <thead><tr><th>Player</th><th>Start throw</th><th>Round 0</th></tr></thead>
+          <tr><td>Player 0</td><td>11</td><td>0</td></tr>
+      </table>
+  </div>
+  <div id="tail">
+    <div>Logging started.</div>
   </div>
   
     <!-- New Game -->
@@ -371,5 +176,10 @@
   </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+      <script type="text/javascript">
+          game = new catan_game(gui, app.sendData);
+          app.initialize();
+          app.registerUpdate(game.update_btle);
+      </script>
  </body>
 </html>

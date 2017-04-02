@@ -26,14 +26,18 @@ var app = {
     initialize: function() {
         this.peripheral_id = 0;
         this.bindEvents();
+        this.onConnectCallback = null;
+        gui.initialize();
     },
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
-        init_gui();
     },
     onDeviceReady: function() {
         app.scanning = false;
         app.scan();
+    },
+    registerUpdate: function(callback) {
+        app.onConnectCallback = callback;
     },
     scan: function() {
         function onScan(peripheral) {
@@ -61,7 +65,7 @@ var app = {
     },
     
     logStatus: function(str) {
-        log_line(str);
+        gui.log_line(str);
     },
     onSuccess: function() {
         app.logStatus('success');
@@ -75,7 +79,7 @@ var app = {
         
         ble.stopScan(function() {app.scanning = false});
 
-        game.update_btle();
+        app.onConnectCallback();
     },
     onDisconnect: function(reason) {
         app.logStatus('Disconnected ' + reason);
@@ -96,4 +100,3 @@ var app = {
     },
 };
 
-app.initialize();

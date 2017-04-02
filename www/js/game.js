@@ -15,17 +15,19 @@ playlist = [
 ];
 
 var STATE_UNINITIALIZED = 0;
+var STATE_ROLLFORSTART = 1;
 var STATE_PLAYING = 2;
 
-function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_sound, send_data) {
+function catan_game(gui, send_data) {
     console.log('Creating catan game!');
     /* Save the callback functions. */
-    this.dice_roll = dice_roll;
-    this.dice_set = dice_set;
-    this.msg_write = msg_write;
-    this.log = function(msg) { log(msg); console.log(msg) };
-    this.update_graph = update_graph;
-    this.play_sound = play_sound;
+    this.dice_roll = gui.dice_roll;
+    this.dice_set = gui.dice_set;
+    this.msg_write = gui.msg_write;
+    this.log = function(msg) { gui.log_line(msg); console.log(msg) };
+    this.gui = gui;
+    this.update_graph = gui.update_chart;
+    this.play_sound = gui.play_sound;
     this.send_data = send_data;
     var this_game = this;
     
@@ -34,7 +36,8 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
     this.reset = function () {
         this_game.state = STATE_UNINITIALIZED;
         //this_game.players = []; /* Not yet supported */ 
-        this_game.player_stats = {};
+        this_game.player_stats = [];
+        this_game.startrolls = [];
         this_game.hash_rnd = true;
         this_game.players = [];
         this_game.board = new board();
@@ -89,7 +92,7 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
             mp3idx = this_game.get_random_int(0, playlist.length);
         this_game.play_sound(playlist[mp3idx]);
         
-        if(this_game.state == STATE_PLAYING) {
+        if(this_game.state == STATE_PLAYING || this_game.state == STATE_ROLLFORSTART) {
             this_game.dice_roll();
             this_game.msg_write('Rolling the dice!');
             this_game.log('Playing sound-effect. Seed: ' + seed + ', MP3 id=' + mp3idx +', MP3 filename=' + playlist[mp3idx]);
@@ -108,6 +111,35 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
     this.button_up = function(seed) {
         if(this_game.state == STATE_UNINITIALIZED) {
             this_game.new_game('fixed', ['All players']);
+        }
+        else if(this_game.state == STATE_ROLLFORSTART) {
+            // Use only one shot of randomness, since otherwise the two will be related.
+            if(arguments.length > 0)
+                var dices = this_game.get_random_int(0, 36, seed);
+            else
+                var dices = this_game.get_random_int(0, 36);
+            var dice1 = parseInt(dices % 6);
+            var dice2 = parseInt(dices / 6);
+            
+            this_game.dice_set(dice1+1, dice2+1);
+            this_game.startrolls[this_game.turn] = dice1 + dice2 + 2;
+            msg = 'Button released! Dice faces: ' + (dice1+1) + ', ' + (dice2+1);
+            this_game.log(msg);
+            
+            if(this_game.turn < (this_game.players.length - 1)){
+                this_game.turn++;
+                this_game.gui.ask_startroll()
+            }
+            else {
+                this_game.turn = this_game._get_first_turn()
+                if(this_game.turn < 0) {
+                    this_game.turn = 0;
+                }
+                else {
+                    this_game.gui.ask_start();
+                    this_game.state = STATE_PLAYING;
+                }
+            }
         }
         else if(this_game.state == STATE_PLAYING){
             // Use only one shot of randomness, since otherwise the two will be related.
@@ -142,6 +174,28 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
         this_game.turn %= this_game.players.length;
     };
     
+    this._get_first_turn = function () {
+        var player;
+        var maxroll = -1;
+        var maxcount = 0;
+        var winner;
+        
+        for(player = 0; player < this_game.startrolls.length; player++) {
+            if(this_game.startrolls[player] == maxroll) {
+                maxcount++;
+            }
+            else if(this_game.startrolls[player] > maxroll) {
+                maxcount = 1;
+                maxroll = this_game.startrolls[player];
+                winner = player;
+            }
+        }
+        if(maxcount != 1) {
+            return -1;
+        }
+        return winner;
+    }
+    
     this.get_player = function() {
         return this_game.players[this_game.turn];
     };
@@ -169,21 +223,23 @@ function catan_game(dice_roll, dice_set, msg_write, log, update_graph, play_soun
           case 'random' : this_game.board.initialize_random(seed_int);  break;
         }
         
-        this_game.player_stats = {};
+        this_game.player_stats = [];
         for(var i = 0; i < this_game.players.length; i++) {
             this_game.player_stats[i] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         }
+        this_game.startrolls = [];
         
-        this_game.msg_write('Generated board. Place tiles according to the colors of the LEDs.');
+        this_game.gui.msg_write('Generated board. Place tiles according to the colors of the LEDs.');
         this_game.update_btle();
         // Still placing tiles, but next time the button is pressed we just want to play!
-        this_game.state = STATE_PLAYING;
+        this_game.state = STATE_ROLLFORSTART;
         this_game.turn = 0;
         graphdata = [];
         for(var i = 0; i<this_game.players.length; i++) {
             graphdata.push({name: this_game.players[i], data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]});
         }
         this_game.update_graph(graphdata);
+        this_game.gui.ask_startroll();
     };
     /** update_btle
      * 
