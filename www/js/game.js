@@ -246,35 +246,27 @@ function catan_game(gui, send_data) {
      *  Send the current state of the board via BTLE to the board itself
      **/
     this.update_btle = function() {
+        var update = []
+        var keep = []
+        /* First, split the tiles in two groups: Those who have changed and those that didn't change.
+         * First update the changed tiles, but also update the tiles that didn't change just in case */
         
         for(var tileidx = 0; tileidx < 19; tileidx++) {
-            
-            var resource_leds = this_game.board.tiles[tileidx].get_leds()
-            
-            var data = new Uint8Array(14);
-            data[0] = tileidx;
-            data[1] = this_game.board.tiles[tileidx].number;
-            data[3] = resource_leds[0];
-            data[4] = resource_leds[1];
-            data[5] = resource_leds[2];
-            if (this_game.board.tiles[tileidx].highlight) {
-                data[6] = 0xFF; // resource brightness
-                data[2] = 0xFF; // num birhgtness
+            if(this_game.board.tiles[tileidx].update) {
+                update.concat(tileidx);
             }
             else {
-                data[6] = 0x60;
-                data[2] = 0x60;
+                keep.concat(tileidx);
             }
-            data[7] = resource_leds[0];
-            data[8] = resource_leds[1];
-            data[9] = resource_leds[2];
-            data[10] = 0xFF; // sea bright
-            data[11] = 0x00;
-            data[12] = 0x00;
-            data[13] = 0xFF;
-            
-            
-            this_game.send_data(data);
         }
+        update.forEach( function (tileidx) {
+            var data = this_game.board.tiles[tileidx].get_leds(tileidx)
+            this_game.send_data(data);
+        });
+        keep.forEach( function (tileidx) {
+            var data = this_game.board.tiles[tileidx].get_leds(tileidx)
+            this_game.send_data(data);
+        });
+        
     };
 }

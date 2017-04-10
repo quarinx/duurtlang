@@ -8,49 +8,46 @@ var SEG_OFF = [0, 0, 0];
 var SEG_ON  = [255, 0, 0];
 
 var tile_config = {
-    Number_leds : {
-    0  : [].concat(SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF), 
-    2  : [].concat(SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_ON , SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF), 
-    3  : [].concat(SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_ON , SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF), 
-    4  : [].concat(SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_ON , SEG_ON , SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF), 
-    5  : [].concat(SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_ON , SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF), 
-    6  : [].concat(SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_ON , SEG_OFF, SEG_ON , SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF), 
-    8  : [].concat(SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_ON , SEG_ON , SEG_ON , SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF), 
-    9  : [].concat(SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_ON , SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF), 
-    10 : [].concat(SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_ON , SEG_OFF, SEG_OFF, SEG_ON , SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF), 
-    11 : [].concat(SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_ON , SEG_OFF, SEG_ON , SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF), 
-    12 : [].concat(SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_ON , SEG_ON , SEG_OFF, SEG_ON , SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF, SEG_OFF), 
+    Resource_colors : {
+        'Woestijn'          : [160,  80,   0],  // Oranje
+        'Bremsenspriets'    : [128, 128,   0],  // Geel
+        'Carbon'            : [255,   0,   0],  // Rood
+        'Rozebutt'          : [120,  60,  60],  // Roze
+        'Alu_7075'          : [ 90,  90,  90],  // Wit
+        'Ziptie'            : [  0, 255,   0],  // Groen
     },
-    Resource_colors : [
-        ['Woestijn'          , [160,  80,   0]],  // Oranje
-        ['Bremsenspriets'    , [128, 128,   0]],  // Geel
-        ['Carbon'            , [255,   0,   0]],  // Rood
-        ['Rozebutt'          , [120,  60,  60]],  // Roze
-        ['Alu_7075'          , [ 90,  90,  90]],  // Wit
-        ['Ziptie'            , [  0, 255,   0]],  // Groen
-    ],
-    Resource_tiles : [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-    
+    Sea_color : [0, 0, 255],
+    Sea_intensity : 1.0,
     dimmed_intensity : 0.1,
     highlighted_intensity : 1.0,
     place_intensity : 0.3
 };
 
-/* Construct the resource_leds object */
-var Resource_leds = {};
-for(var idx = 0; idx < tile_config.Resource_colors.length; idx++) {
-    resource = tile_config.Resource_colors[idx][0];
-    color    = tile_config.Resource_colors[idx][1];
-    Resource_leds[resource] = color;
-}
- 
+var BLE_TILE = 0;
+var BLE_NUMBER = 1;
+var BLE_NUM_INT = 2;
+var BLE_NUM_R = 3;
+var BLE_NUM_G = 4;
+var BLE_NUM_B = 5;
+var BLE_RES_INT = 6;
+var BLE_RES_R = 7;
+var BLE_RES_G = 8;
+var BLE_RES_B = 9;
+var BLE_SEA_INT = 10;
+var BLE_SEA_R = 11;
+var BLE_SEA_G = 12;
+var BLE_SEA_B = 13;
+
+var BLE_LENGTH = 14;
+
+
 function tile(number, resource) {
     this.number = number;
     this.resource = resource;
+    this.intensity = -1;
     this.place = false;
     this.highlight = false;
-    
-    this.led_state = 0;
+    this.update = true;
     
     var this_tile = this;
     /*** update_state:
@@ -63,9 +60,6 @@ function tile(number, resource) {
      * @param place:                If true, use place intensity.
      ***/
     this.update_state = function(highlight_number, highlight_resource, place) {
-        this_tile.led_state = tile_config.Number_leds[this_tile.number].slice(0);
-        //var resource_leds = Resource_leds[this_tile.resource];
-        
         var resource_intensity = tile_config.dimmed_intensity;
         this_tile.highlight = false;
         this_tile.place = false;
@@ -77,16 +71,45 @@ function tile(number, resource) {
         
         if(place) {
             resource_intensity = tile_config.place_intensity;
-            this_tile.place = true
+            this_tile.place = true;
         }
         
-        //for(var led_idx = 0; led_idx < this_tile.led_state.length; led_idx++)
-        //    this_tile.led_state[led_idx] += parseInt(resource_intensity * resource_leds[led_idx]);
+        if(this_tile.intensity != resource_intensity)
+        {
+            this_tile.update = true;
+        }
+        this_tile.intensity = resource_intensity;
     };
     
-    this.get_leds = function() {
-        return Resource_leds[this_tile.resource]
-        //return this_tile.led_state.slice(0);
+    /*** get_leds:
+     * Get the bytes to send as a BLE packet to update the LED status of this tile.
+     * Caller shall provide tile_idx since it is unknown to this object.
+     * 
+     * @param tile_idx:     Acutal location of tile on the board.
+     * 
+     * @return Uint8Array of data.
+     ***/
+    this.get_leds = function(tile_idx) {
+        var color = tile_config.Resource_colors[this_tile.resource];
+        var data = new Uint8Array(BLE_LENGTH);
+        data[BLE_TILE] = tile_idx;
+        data[BLE_NUMBER] = this_tile.number;
+        data[BLE_NUM_INT] = parseInt(255 * this_tile.intensity);
+        data[BLE_NUM_R] = color[0];
+        data[BLE_NUM_G] = color[1];
+        data[BLE_NUM_B] = color[2];
+        data[BLE_RES_INT] = parseInt(255 * this_tile.intensity);
+        data[BLE_RES_R] = color[0];
+        data[BLE_RES_G] = color[1];
+        data[BLE_RES_B] = color[2];
+        data[BLE_SEA_INT] = 0xFF; // sea bright
+        data[BLE_SEA_R] = tile_config.Sea_color[0];
+        data[BLE_SEA_G] = tile_config.Sea_color[1];
+        data[BLE_SEA_B] = tile_config.Sea_color[2];
+        
+        this_tile.update = false;
+        
+        return data;
     };
     /* On init, run the update function */
     this.update_state(-1, -1, true);
