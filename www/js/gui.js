@@ -35,8 +35,10 @@ var gui = {
         document.getElementById('opennew').onclick=gui.new_game_open;
         document.getElementById('dice0').ontouchstart = function () { game.button_down()}; // Somehow directly registering game.button_down does not seem to work.
         document.getElementById('dice0').ontouchend = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
+        document.getElementById('dice0').onclick = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
         document.getElementById('dice1').ontouchstart = function () { game.button_down()}; // Somehow directly registering game.button_down does not seem to work.
         document.getElementById('dice1').ontouchend = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
+        document.getElementById('dice1').onclick = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
         document.getElementById('tail').onclick=gui.toggle_tail;
         
 
@@ -45,12 +47,12 @@ var gui = {
         var button = parent.document.getElementById('bigredbutton');
         var board = parent.document.getElementById('board');
         /* If button is not found, we are not running in the sim-sim */
-        if(! (typeof button === 'undefined')) {
+        if(! (button === null)) {
             button.onmousedown = function () { game.button_down()}; // Somehow directly using game.button_down does not seem to work.
             button.onmouseup = function () { game.button_up() };
             game.update_btle = function () { parent.document.getElementById('board').innerHTML = get_svg(game.board)};
         }
-        if(! (typeof board === 'undefined')) {
+        if(! (board === null)) {
             board.innerHTML = '';
         }
     },
@@ -164,8 +166,8 @@ var gui = {
     },
     
     update_players: function() {
-        var input = $('#nrplayers')
-        var number = parseInt(input.val())
+        var input = $('#nrplayers');
+        var number = parseInt(input.val());
         for(var i = 0; i < 4; i++) {
             var box = $('#player' + i);
             if(i < number) {
@@ -173,20 +175,20 @@ var gui = {
             }
             else {
                 box.css('display', 'none');
-            };
-        };
+            }
+        }
      },
      
      new_game: function() {
         gui.new_game_close();
-        var players = []
+        var players = [];
         
-        var input = $('#nrplayers')
-        var number = parseInt(input.val())
+        var input = $('#nrplayers');
+        var number = parseInt(input.val());
         for(var i = 0; i < number; i++) {
             var box = $('#player' + i);
             players.push(box.val());
-        };
+        }
         var boardtype = $('input[name=gametype]:radio:checked').val();
         var seed = $('#boardseed').val();
         
@@ -196,7 +198,7 @@ var gui = {
         var board = parent.document.getElementById('board');
         if(! (typeof board === 'undefined')) {
             board.innerHTML = get_svg(game.board);
-        };
+        }
     },
      
     new_game_close: function() {
@@ -211,11 +213,11 @@ var gui = {
     
     toggle_tail : function() {
         if(gui.tail_open) {
-            $('#tail').height("15px");
+            $('#tail').height('15px');
             gui.tail_open = false;
         }
         else {
-            $('#tail').height("250px");
+            $('#tail').height('250px');
             gui.tail_open = true;
         }
     },

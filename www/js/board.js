@@ -292,16 +292,4 @@ function board() {
             tile.update_state(highlight_number, highlight_resource, place=false);
         }
     };
-    
-    /** Get the LED values from all tiles.
-     * 
-     * @return: array of integers that each represent a byte to be send to the LEDs
-    **/
-    this.get_leds = function() {
-        var retval = [];
-        for(var tile_id = 0; tile_id < this_board.tiles.length; tile_id++) {
-            retval.concat(this_board.tiles[tile_id].get_leds());
-        }
-        return retval;
-    };
 }

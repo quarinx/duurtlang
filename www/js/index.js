@@ -87,7 +87,6 @@ var app = {
     },
     
     sendData: function (data) {
-        //app.logStatus('Sending ' + data);
         if(app.peripheral_id != 0)
         {
             ble.write(

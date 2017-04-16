@@ -37,8 +37,9 @@ var BLE_SEA_INT = 10;
 var BLE_SEA_R = 11;
 var BLE_SEA_G = 12;
 var BLE_SEA_B = 13;
+var BLE_UPDATE = 14;
 
-var BLE_LENGTH = 14;
+var BLE_LENGTH = 15;
 
 
 function tile(number, resource) {
@@ -89,7 +90,7 @@ function tile(number, resource) {
      * 
      * @return Uint8Array of data.
      ***/
-    this.get_leds = function(tile_idx) {
+    this.get_leds = function(tile_idx, last) {
         var color = tile_config.Resource_colors[this_tile.resource];
         var data = new Uint8Array(BLE_LENGTH);
         data[BLE_TILE] = tile_idx;
@@ -106,7 +107,12 @@ function tile(number, resource) {
         data[BLE_SEA_R] = tile_config.Sea_color[0];
         data[BLE_SEA_G] = tile_config.Sea_color[1];
         data[BLE_SEA_B] = tile_config.Sea_color[2];
-        
+        if(last) {
+            data[BLE_UPDATE] = 1;
+        }
+        else {
+            data[BLE_UPDATE] = 0;
+        }
         this_tile.update = false;
         
         return data;

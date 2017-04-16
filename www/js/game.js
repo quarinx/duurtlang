@@ -71,7 +71,7 @@ function catan_game(gui, send_data) {
              * condition during the lifetime of the game is less than 0.01% for a 32-bit value */
             var hashed = md5('' + rand_number);
             rand_number = parseInt(hashed.slice(0,7), 16);
-            console.log("MD5 based random number: " + rand_number);
+            console.log('MD5 based random number: ' + rand_number);
             /* By the way, using the unhashed time is fair since there is no upper bound. */
         }
         return (rand_number % modulo) + low;
@@ -128,10 +128,10 @@ function catan_game(gui, send_data) {
             
             if(this_game.turn < (this_game.players.length - 1)){
                 this_game.turn++;
-                this_game.gui.ask_startroll()
+                this_game.gui.ask_startroll();
             }
             else {
-                this_game.turn = this_game._get_first_turn()
+                this_game.turn = this_game._get_first_turn();
                 if(this_game.turn < 0) {
                     this_game.turn = 0;
                 }
@@ -194,7 +194,7 @@ function catan_game(gui, send_data) {
             return -1;
         }
         return winner;
-    }
+    };
     
     this.get_player = function() {
         return this_game.players[this_game.turn];
@@ -246,8 +246,8 @@ function catan_game(gui, send_data) {
      *  Send the current state of the board via BTLE to the board itself
      **/
     this.update_btle = function() {
-        var update = []
-        var keep = []
+        var update = [];
+        var keep = [];
         /* First, split the tiles in two groups: Those who have changed and those that didn't change.
          * First update the changed tiles, but also update the tiles that didn't change just in case */
         
@@ -259,14 +259,14 @@ function catan_game(gui, send_data) {
                 keep.concat(tileidx);
             }
         }
-        update.forEach( function (tileidx) {
-            var data = this_game.board.tiles[tileidx].get_leds(tileidx)
+        for(var tileidx = 0; tileidx < update.length; tileidx++) {
+            var data = this_game.board.tiles[tileidx].get_leds(tileidx, tileidx == update.length-1);
             this_game.send_data(data);
-        });
-        keep.forEach( function (tileidx) {
-            var data = this_game.board.tiles[tileidx].get_leds(tileidx)
+        }
+        for(var tileidx = 0; tileidx < keep.length; tileidx++) {
+            var data = this_game.board.tiles[tileidx].get_leds(tileidx, tileidx == keep.length-1);
             this_game.send_data(data);
-        });
+        }
         
     };
 }
