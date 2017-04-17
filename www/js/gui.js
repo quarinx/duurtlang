@@ -35,10 +35,8 @@ var gui = {
         document.getElementById('opennew').onclick=gui.new_game_open;
         document.getElementById('dice0').ontouchstart = function () { game.button_down()}; // Somehow directly registering game.button_down does not seem to work.
         document.getElementById('dice0').ontouchend = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
-        document.getElementById('dice0').onclick = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
         document.getElementById('dice1').ontouchstart = function () { game.button_down()}; // Somehow directly registering game.button_down does not seem to work.
         document.getElementById('dice1').ontouchend = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
-        document.getElementById('dice1').onclick = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
         document.getElementById('tail').onclick=gui.toggle_tail;
         
 
@@ -48,6 +46,10 @@ var gui = {
         var board = parent.document.getElementById('board');
         /* If button is not found, we are not running in the sim-sim */
         if(! (button === null)) {
+            document.getElementById('dice0').onmousedown = function () { game.button_down()}; // Somehow directly registering game.button_down does not seem to work.
+            document.getElementById('dice0').onmouseup = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
+            document.getElementById('dice1').onmousedown = function () { game.button_down()}; // Somehow directly registering game.button_down does not seem to work.
+            document.getElementById('dice1').onmouseup = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
             button.onmousedown = function () { game.button_down()}; // Somehow directly using game.button_down does not seem to work.
             button.onmouseup = function () { game.button_up() };
             game.update_btle = function () { parent.document.getElementById('board').innerHTML = get_svg(game.board)};
