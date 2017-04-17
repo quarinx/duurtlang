@@ -371,10 +371,10 @@ function catan_game(gui, send_data) {
         
         for(var tileidx = 0; tileidx < 19; tileidx++) {
             if(this_game.board.tiles[tileidx].update) {
-                update.concat(tileidx);
+                update.push(tileidx);
             }
             else {
-                keep.concat(tileidx);
+                keep.push(tileidx);
             }
         }
         for(var tileidx = 0; tileidx < update.length; tileidx++) {
