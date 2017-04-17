@@ -377,11 +377,13 @@ function catan_game(gui, send_data) {
                 keep.push(tileidx);
             }
         }
-        for(var tileidx = 0; tileidx < update.length; tileidx++) {
+        for(var idx = 0; idx < update.length; idx++) {
+            var tileidx = update[idx];
             var data = this_game.board.tiles[tileidx].get_leds(tileidx, tileidx == update.length-1);
             this_game.send_data(data);
         }
-        for(var tileidx = 0; tileidx < keep.length; tileidx++) {
+        for(var idx = 0; idx < keep.length; idx++) {
+            var tileidx = keep[idx];
             var data = this_game.board.tiles[tileidx].get_leds(tileidx, tileidx == keep.length-1);
             this_game.send_data(data);
         }
