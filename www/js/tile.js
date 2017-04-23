@@ -99,7 +99,7 @@ function tile(number, resource) {
         data[BLE_NUM_R] = color[0];
         data[BLE_NUM_G] = color[1];
         data[BLE_NUM_B] = color[2];
-        data[BLE_RES_INT] = parseInt(255 * this_tile.intensity);
+        data[BLE_RES_INT] = 0xFF; //parseInt(255 * this_tile.intensity);
         data[BLE_RES_R] = color[0];
         data[BLE_RES_G] = color[1];
         data[BLE_RES_B] = color[2];

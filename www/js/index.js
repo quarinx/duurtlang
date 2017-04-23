@@ -21,7 +21,9 @@
 var app = {
     led: {
         service: 'A000',
-        value: 'A001'
+        value: 'A001',
+        brightness: 'A002',
+        power: 'A003',
     },
     initialize: function() {
         this.peripheral_id = 0;
@@ -93,6 +95,34 @@ var app = {
                 app.peripheral_id,
                 app.led.service,
                 app.led.value,
+                data.buffer, app.onSuccess, app.onFailure
+            );
+        }
+    },
+    
+    sendBrightness: function (value) {
+        if(app.peripheral_id != 0)
+        {
+            var data = new Uint8Array(1);
+            data[0] = value;
+            ble.write(
+                app.peripheral_id,
+                app.led.service,
+                app.led.brightness,
+                data.buffer, app.onSuccess, app.onFailure
+            );
+        }
+    },
+    
+    sendPower: function (value) {
+        if(app.peripheral_id != 0)
+        {
+            var data = new Uint8Array(1);
+            data[0] = value;
+            ble.write(
+                app.peripheral_id,
+                app.led.service,
+                app.led.power,
                 data.buffer, app.onSuccess, app.onFailure
             );
         }
