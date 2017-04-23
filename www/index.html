@@ -40,6 +40,18 @@
   <div id="rightcol">
     <div id="chartContainer" style="height: 230px; width: 100%; float: left; background-color: white"><canvas id="myChart" width="400" height="200"></canvas></div>
   </div>
+  <div id="config" style="width: 100%; float: left">
+    
+    <p>Brightness: <input type="range" id="brightness" min="0" max="100" step="1" value="99" /></p>
+    <div>Special mode: <input type="text" id="specialmode" /></div>
+    <input type="button" id="onbutton" value="On!" />
+    <input type="button" id="offbutton" value="Off?" />
+    </div>
+  </div>
+  <div id="status" style="width: 100%; float: left">
+    Battery level: <progress min="0" max="100" id="battery" value="80" />
+    <div id="state_connected">Disconnected...</div>
+  </div>
   <div id="statsdiv">
       <!-- WORK IN PROGRESS...table id="stats" class="stats" cellspacing="0" width="100%">
           <thead><tr><th>Player</th><th>Start throw</th><th>Round 0</th></tr></thead>

@@ -33,24 +33,31 @@ var gui = {
         document.getElementById('startgame').onclick=gui.new_game;
         document.getElementById('closenew').onclick=gui.new_game_close;
         document.getElementById('opennew').onclick=gui.new_game_open;
-        document.getElementById('dice0').ontouchstart = function () { game.button_down()}; // Somehow directly registering game.button_down does not seem to work.
-        document.getElementById('dice0').ontouchend = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
-        document.getElementById('dice1').ontouchstart = function () { game.button_down()}; // Somehow directly registering game.button_down does not seem to work.
-        document.getElementById('dice1').ontouchend = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
+        
+        /* Game is not yet available when this code is parsed. Therefore, use an anonymous function to wrap. */
+        document.getElementById('dice0').ontouchstart = function () { game.button_down()};
+        document.getElementById('dice0').ontouchend = function () { game.button_up()};
+        document.getElementById('dice1').ontouchstart = function () { game.button_down()};
+        document.getElementById('dice1').ontouchend = function () { game.button_up()};
         document.getElementById('tail').onclick=gui.toggle_tail;
         
-
+        document.getElementById('brightness').onchange = function () { var brightness = document.getElementById('brightness').value; gui.set_battery_level(brightness)};
+        document.getElementById('specialmode').onchange = function () { var mode = document.getElementById('specialmode').value; window.alert("New special mode: " + mode)};
+        document.getElementById('onbutton').onclick = function () { window.alert("Switchin board on")};
+        document.getElementById('offbutton').onclick = function () { window.alert("Switchin board off")};
+        
         gui.update_players();
         /* Try to bind to the simulator hooks */
         var button = parent.document.getElementById('bigredbutton');
         var board = parent.document.getElementById('board');
         /* If button is not found, we are not running in the sim-sim */
         if(! (button === null)) {
-            document.getElementById('dice0').onmousedown = function () { game.button_down()}; // Somehow directly registering game.button_down does not seem to work.
-            document.getElementById('dice0').onmouseup = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
-            document.getElementById('dice1').onmousedown = function () { game.button_down()}; // Somehow directly registering game.button_down does not seem to work.
-            document.getElementById('dice1').onmouseup = function () { game.button_up()}; // Somehow directly registering game.button_up does not seem to work.
-            button.onmousedown = function () { game.button_down()}; // Somehow directly using game.button_down does not seem to work.
+            /* Game is not yet available when this code is parsed. Therefore, use an anonymous function to wrap. */
+            document.getElementById('dice0').onmousedown = function () { game.button_down()};
+            document.getElementById('dice0').onmouseup = function () { game.button_up()};
+            document.getElementById('dice1').onmousedown = function () { game.button_down()};
+            document.getElementById('dice1').onmouseup = function () { game.button_up()};
+            button.onmousedown = function () { game.button_down()};
             button.onmouseup = function () { game.button_up() };
             game.update_btle = function () { parent.document.getElementById('board').innerHTML = get_svg(game.board)};
         }
@@ -211,6 +218,12 @@ var gui = {
     new_game_open: function() {
         var playerwindow = $('#newgame');
         playerwindow.css('display', 'inline');
+    },
+    
+    set_battery_level: function(level) {
+        gui.log_line("Setting level to: " + level)
+        var levelgage = $('#battery');
+        levelgage.val(level);
     },
     
     toggle_tail : function() {
