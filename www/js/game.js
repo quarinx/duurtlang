@@ -224,20 +224,20 @@ function catan_game(gui, send_data) {
      * Whenever the game is active, play animation and sound.
      * Any real function is executed once the button is released.
      * 
-     * @param seed: Seed value for dice roll.
+     * @param dice1: Value of first dice
+     * @param dice2: Value of second dice
      *  */
-    this.button_up = function(seed) {
+    this.button_up = function(dice1, dice2) {
         if(this_game.state == STATE_UNINITIALIZED) {
             this_game.new_game('fixed', ['All players']);
         }
         else if(this_game.state == STATE_ROLLFORSTART) {
             // Use only one shot of randomness, since otherwise the two will be related.
-            if(arguments.length > 0)
-                var dices = this_game.get_random_int(0, 36, seed);
-            else
+            if(arguments.length < 2) {
                 var dices = this_game.get_random_int(0, 36);
-            var dice1 = parseInt(dices % 6);
-            var dice2 = parseInt(dices / 6);
+                var dice1 = parseInt(dices % 6);
+                var dice2 = parseInt(dices / 6);
+            }
             
             this_game.dice_set(dice1+1, dice2+1);
             this_game.startrolls[this_game.turn] = dice1 + dice2 + 2;
@@ -262,12 +262,11 @@ function catan_game(gui, send_data) {
         }
         else if(this_game.state == STATE_PLAYING){
             // Use only one shot of randomness, since otherwise the two will be related.
-            if(arguments.length > 0)
-                var dices = this_game.get_random_int(0, 36, seed);
-            else
+            if(arguments.length < 2) {
                 var dices = this_game.get_random_int(0, 36);
-            var dice1 = parseInt(dices % 6);
-            var dice2 = parseInt(dices / 6);
+                var dice1 = parseInt(dices % 6);
+                var dice2 = parseInt(dices / 6);
+            }
             
             this_game.dice_set(dice1+1, dice2+1);
             msg = 'Button released! Dice faces: ' + (dice1+1) + ', ' + (dice2+1);
@@ -282,7 +281,7 @@ function catan_game(gui, send_data) {
             //Highlight selected tiles.
             this_game.board.update_state(dice1 + dice2 + 2, false);
             this_game.update_btle();
-            this_game.log(this_game.get_player() + ' rolled the dice. Seed: ' + seed + ', Random number=' + dices +', dice faces=' + (dice1+1) + ',' + (dice2+1));
+            this_game.log(this_game.get_player() + ' rolled the dice. Dice faces=' + (dice1+1) + ',' + (dice2+1));
             this_game._next_turn();
             this_game.update_graph(graphdata);
         }
