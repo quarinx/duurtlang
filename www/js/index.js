@@ -199,7 +199,7 @@ var app = {
                 function(raw) {
                     var data = new Uint8Array(raw);
                     callback(data);
-                }
+                },
                 app.onFailure
             );
         }

@@ -42,7 +42,6 @@ var gui = {
         document.getElementById('tail').onclick=gui.toggle_tail;
         
         document.getElementById('brightness').onchange = function () { var brightness = document.getElementById('brightness').value; app.sendBrightness(brightness); game.update_btle()};
-        document.getElementById('specialmode').onchange = function () { var mode = document.getElementById('specialmode').value; window.alert("New special mode: " + mode)};
         document.getElementById('onbutton').onclick = function () { app.sendPower(1)};
         document.getElementById('offbutton').onclick = function () { app.sendPower(0)};
         

@@ -252,6 +252,7 @@ function catan_game(gui, send_data) {
                 this_game.turn = this_game._get_first_turn();
                 if(this_game.turn < 0) {
                     this_game.turn = 0;
+                    this_game.gui.ask_startroll();
                 }
                 else {
                     this_game.gui.ask_start();
