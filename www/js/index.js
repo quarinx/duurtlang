@@ -100,11 +100,12 @@ var app = {
     onConnect: function(peripheral) {
         app.logStatus('Connected to ' + peripheral.id);
         
-        if(peripheral.services.includes(app.led.service)) {
+        // Assuming that BLE Cental always returns lower case
+        if(peripheral.services.includes(app.led.service.toLowerCase())) {
             app.peripheral_id = peripheral.id;
             window.setTimeout(app.onConnectCallback, 10);
         } 
-        else if(peripheral.services.includes(app.button.service)) {
+        else if(peripheral.services.includes(app.button.service.toLowerCase())) {
             app.button_id = peripheral.id;
             ble.startNotification(peripheral.id, 
                                   button.service,
@@ -114,11 +115,11 @@ var app = {
                                       app.logStatus('Error from button');
                                     });
         }
-        else if(peripheral.services.includes(app.dice.service)) {
+        else if(peripheral.services.includes(app.dice.service.toLowerCase())) {
             app.logStatus('Sorry, no dice support yet');
         }
         else {
-            app.logStatus('Unknown service: ' + peripheral.services[0]);
+            app.logStatus('Unknown service: ' + peripheral.services);
         }
         
         if(app.peripheral_id != 0 && app.button_id != 0) {
@@ -127,15 +128,18 @@ var app = {
 
     },
     onDisconnect: function(peripheral) {
-        app.logStatus('Disconnected ' + reason);
-        if(peripheral.services[0] == app.led.service) {
+        if(peripheral.id == app.peripheral_id) {
             app.peripheral_id = 0;
+            app.logStatus('Disconnected from board' + reason);
+            // Restart scanning
+            app.scan();
         } 
-        else if(peripheral.services[0] == app.button.service) {
+        else if(peripheral.id == app.button_id) {
             app.button_id = 0;
+            app.logStatus('Disconnected from button' + reason);
+            // Restart scanning
+            app.scan();
         }
-        // Restart scanning
-        app.scan();
     },
     
     sendData: function (data) {
