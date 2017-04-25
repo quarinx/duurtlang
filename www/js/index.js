@@ -100,11 +100,11 @@ var app = {
     onConnect: function(peripheral) {
         app.logStatus('Connected to ' + peripheral.id);
         
-        if(peripheral.services[0] == app.led.service) {
+        if(peripheral.services.includes(app.led.service)) {
             app.peripheral_id = peripheral.id;
             window.setTimeout(app.onConnectCallback, 10);
         } 
-        else if(peripheral.services[0] == app.button.service) {
+        else if(peripheral.services.includes(app.button.service)) {
             app.button_id = peripheral.id;
             ble.startNotification(peripheral.id, 
                                   button.service,
@@ -114,7 +114,7 @@ var app = {
                                       app.logStatus('Error from button');
                                     });
         }
-        else if(peripheral.services[0] == app.dice.service) {
+        else if(peripheral.services.includes(app.dice.service)) {
             app.logStatus('Sorry, no dice support yet');
         }
         else {
