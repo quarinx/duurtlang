@@ -26,8 +26,20 @@ var app = {
         power: 'A003',
         battery : 'A004'
     },
+    button: {
+        service: 'B000',
+        power: 'B001',
+        event : 'B002'
+    },
+    dice: {
+        service: 'C000',
+        power: 'C001',
+        event : 'C002',
+        status : 'C002' // Not used.
+    },
     initialize: function() {
         this.peripheral_id = 0;
+        this.button_id = 0;
         this.bindEvents();
         this.onConnectCallback = null;
         gui.initialize();
@@ -41,6 +53,12 @@ var app = {
     },
     registerUpdate: function(callback) {
         app.onConnectCallback = callback;
+    },
+    registerButtonDown: function(callback) {
+        app.onButtonDown = callback;
+    },
+    registerButtonUp: function(callback) {
+        app.onButtonUp = callback;
     },
     scan: function() {
         function onScan(peripheral) {
@@ -59,7 +77,10 @@ var app = {
             // First set scanning to True, so that a timer can't
             // re-start scanning.
             app.scanning = true;
-            ble.startScan([app.led.service], onScan, null);
+            ble.startScan([app.led.service, 
+                           app.button.service, 
+                           app.dice.service],
+                           onScan, null);
         }
     },
     scanStop: function() {
@@ -78,14 +99,42 @@ var app = {
     },
     onConnect: function(peripheral) {
         app.logStatus('Connected to ' + peripheral.id);
-        app.peripheral_id = peripheral.id;
         
-        ble.stopScan(function() {app.scanning = false});
+        if(peripheral.services[0] == app.led.service) {
+            app.peripheral_id = peripheral.id;
+            window.setTimeout(app.onConnectCallback, 10);
+        } 
+        else if(peripheral.services[0] == app.button.service) {
+            app.button_id = peripheral.id;
+            ble.startNotification(peripheral.id, 
+                                  button.service,
+                                  button.event,
+                                  app.receiveButtonChange, 
+                                  function () {
+                                      app.logStatus('Error from button');
+                                    });
+        }
+        else if(peripheral.services[0] == app.dice.service) {
+            app.logStatus('Sorry, no dice support yet');
+        }
+        else {
+            app.logStatus('Unknown service: ' + peripheral.services[0]);
+        }
+        
+        if(app.peripheral_id != 0 && app.button_id != 0) {
+            ble.stopScan(function() {app.scanning = false});
+        }
 
-        app.onConnectCallback();
     },
-    onDisconnect: function(reason) {
+    onDisconnect: function(peripheral) {
         app.logStatus('Disconnected ' + reason);
+        if(peripheral.services[0] == app.led.service) {
+            app.peripheral_id = 0;
+        } 
+        else if(peripheral.services[0] == app.button.service) {
+            app.button_id = 0;
+        }
+        // Restart scanning
         app.scan();
     },
     
@@ -127,24 +176,42 @@ var app = {
                 data.buffer, app.onSuccess, app.onFailure
             );
         }
+        if(app.button_id != 0)
+        {
+            var data = new Uint8Array(1);
+            data[0] = value;
+            ble.write(
+                app.button_id,
+                app.button.service,
+                app.button.power,
+                data.buffer, app.onSuccess, app.onFailure
+            );
+        }
     },
     
     updateBatteryLevel: function (callback) {
         if(app.peripheral_id != 0)
         {
-            var data = new Uint8Array(1);
-            data[0] = value;
             ble.read(
                 app.peripheral_id,
                 app.led.service,
                 app.led.battery,
-                callback,
+                function(raw) {
+                    var data = new Uint8Array(raw);
+                    callback(data);
+                }
                 app.onFailure
             );
         }
+    },
+    
+    receiveButtonChange: function (raw) {
+        var data = new Uint8Array(raw);
+        if(data[0] == 0) {
+            app.onButtonUp();
+        }
         else {
-            window.alert("Not updating battery since we are not connected");
-            callback(55);
+            app.onButtonDown();
         }
     },
 };

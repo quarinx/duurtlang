@@ -101,6 +101,8 @@
           game = new catan_game(gui, app.sendData);
           app.initialize();
           app.registerUpdate(game.update_btle);
+          app.registerButtonDown(game.button_down);
+          app.registerButtonUp(game.button_up);
       </script>
  </body>
 </html>

@@ -64,7 +64,7 @@ var gui = {
         if(! (board === null)) {
             board.innerHTML = '';
         }
-        setTimeout(gui.request_battery_update, 15*1000);
+        window.setTimeout(gui.request_battery_update, 15*1000);
     },
     
     request_battery_update: function() {
