@@ -64,6 +64,16 @@ var gui = {
         if(! (board === null)) {
             board.innerHTML = '';
         }
+        setTimeout(gui.request_battery_update, 15*1000);
+    },
+    
+    request_battery_update: function() {
+        app.updateBatteryLevel(gui.set_battery_level);
+        setTimeout(gui.request_battery_update, 15*1000);
+    },
+    
+    set_battery_level: function(data) {
+        document.getElementById('battery').value = data[0];
     },
     
     init_chart: function() {

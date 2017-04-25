@@ -21,9 +21,10 @@
 var app = {
     led: {
         service: 'A000',
-        value: 'A001',
+        tile: 'A001',
         brightness: 'A002',
         power: 'A003',
+        battery : 'A004'
     },
     initialize: function() {
         this.peripheral_id = 0;
@@ -70,7 +71,7 @@ var app = {
         gui.log_line(str);
     },
     onSuccess: function() {
-        app.logStatus('success');
+        null;
     },
     onFailure: function(reason) {
         app.logStatus('fail ' + reason);
@@ -94,7 +95,7 @@ var app = {
             ble.write(
                 app.peripheral_id,
                 app.led.service,
-                app.led.value,
+                app.led.tile,
                 data.buffer, app.onSuccess, app.onFailure
             );
         }
@@ -125,6 +126,25 @@ var app = {
                 app.led.power,
                 data.buffer, app.onSuccess, app.onFailure
             );
+        }
+    },
+    
+    updateBatteryLevel: function (callback) {
+        if(app.peripheral_id != 0)
+        {
+            var data = new Uint8Array(1);
+            data[0] = value;
+            ble.read(
+                app.peripheral_id,
+                app.led.service,
+                app.led.battery,
+                callback,
+                app.onFailure
+            );
+        }
+        else {
+            window.alert("Not updating battery since we are not connected");
+            callback(55);
         }
     },
 };
