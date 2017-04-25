@@ -77,9 +77,7 @@ var app = {
             // First set scanning to True, so that a timer can't
             // re-start scanning.
             app.scanning = true;
-            ble.startScan([app.led.service, 
-                           app.button.service, 
-                           app.dice.service],
+            ble.startScan([],
                            onScan, null);
         }
     },
