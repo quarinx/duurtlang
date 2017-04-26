@@ -77,8 +77,7 @@ var app = {
             // First set scanning to True, so that a timer can't
             // re-start scanning.
             app.scanning = true;
-            ble.startScan([],
-                           onScan, null);
+            ble.startScan([], onScan, null);
         }
     },
     scanStop: function() {
@@ -106,8 +105,8 @@ var app = {
         else if(peripheral.services.includes(app.button.service.toLowerCase())) {
             app.button_id = peripheral.id;
             ble.startNotification(peripheral.id, 
-                                  button.service,
-                                  button.event,
+                                  app.button.service,
+                                  app.button.event,
                                   app.receiveButtonChange, 
                                   function () {
                                       app.logStatus('Error from button');
@@ -128,13 +127,13 @@ var app = {
     onDisconnect: function(peripheral) {
         if(peripheral.id == app.peripheral_id) {
             app.peripheral_id = 0;
-            app.logStatus('Disconnected from board' + reason);
+            app.logStatus('Disconnected from board');
             // Restart scanning
             app.scan();
         } 
         else if(peripheral.id == app.button_id) {
             app.button_id = 0;
-            app.logStatus('Disconnected from button' + reason);
+            app.logStatus('Disconnected from button');
             // Restart scanning
             app.scan();
         }
@@ -208,6 +207,7 @@ var app = {
     },
     
     receiveButtonChange: function (raw) {
+        app.logStatus('Button changed!');
         var data = new Uint8Array(raw);
         if(data[0] == 0) {
             app.onButtonUp();
