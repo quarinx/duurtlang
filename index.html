@@ -1,0 +1,116 @@
+<html>
+ <head>
+  <title>Catan High Nicety Edition</title>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/gui.css" />
+
+    <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="js/dice.js"></script>
+    <script type="text/javascript" src="js/jquery.canvasjs.min.js"></script>
+    <script type="text/javascript" src="js/Chart.js"></script>
+    <script type="text/javascript" src="js/seedrandom.js"></script>
+    <script type="text/javascript" src="js/md5.js"></script>
+    <script type="text/javascript" src="js/tile.js"></script>
+    <script type="text/javascript" src="js/tile.js"></script>
+    <script type="text/javascript" src="js/board.js"></script>
+    <script type="text/javascript" src="js/game.js"></script>
+    <script type="text/javascript" src="js/simulateboard.js"></script>
+    <script type="text/javascript" src="js/gui.js"></script>
+    <script type="text/javascript" src="js/scoretable.js"></script>
+ </head>
+ <body>
+  <div id="leftcol">
+	<img src="img/menu.png" alt="-" id="menu" style="height:40px; width: 40px; padding: 10px;"/>
+	<h1>CATAN</h1>
+	<h2>- High Nicety Edition -</h2>
+    <div id="dicewrap" style="margin-left: 5%; margin-top: 30px;">
+     <div id="dice0"></div>
+     <div id="dice1"></div>
+    </div>
+    <div id="nextturn"></div>
+    <div id="svgboard">&nbsp;</div>
+    <div id="opennew">New Game!</div>
+  </div>
+  <div id="rightcol">
+    <div id="chartContainer" style="height: 75%; width: 100%; float: left; background-color: white"><canvas id="myChart" width="400" height="200"></canvas></div>
+  </div>
+  <div id="config" style="width: 100%; float: left">
+    
+    <p>Brightness: <input type="range" id="brightness" min="0" max="255" step="1" value="255" /></p>
+    <input type="button" id="onbutton" value="On!" />
+    <input type="button" id="offbutton" value="Off?" />
+    </div>
+  </div>
+  <div id="status" style="width: 100%; float: left">
+    Battery level: <progress min="0" max="255" id="battery" value="80" />
+    <div id="state_connected">Disconnected...</div>
+  </div>
+  <div id="statsdiv">
+      <!-- WORK IN PROGRESS...table id="stats" class="stats" cellspacing="0" width="100%">
+          <thead><tr><th>Player</th><th>Start throw</th><th>Round 0</th></tr></thead>
+          <tr><td>Player 0</td><td>11</td><td>0</td></tr>
+      </table-->
+  </div>
+  <div id="tail">
+    <div>Logging started.</div>
+  </div>
+  
+    <!-- New Game -->
+    <div id="newgame" class="newgame">
+
+      <!-- Modal content -->
+      <div class="newgame-content">
+		<div style="width: 100%;">
+			<h1 style="float:left; width: 70%; font-size: 200%; margin-top: 5px; margin-bottom: 10px; text-align:left;">New game</h1>
+			<input type="submit" id="closenew"  value="Close" style="float:right;">
+			<input type="submit" id="startgame" value="Start" style="float:right;">
+		</div>
+		<div>
+		<div id="left-start-col">
+			<h3>Game Set-up</h3>
+			<p>
+			<input type="radio" name="gametype" value="fixed" id="fixedbtn" checked /><label for="fixedbtn">Fixed (Easy)</label><br>
+			<input type="radio" name="gametype" value="ordered" id="orderedbtn" /><label for="orderedbtn">Ordered (Meh)</label><br>
+			<input type="radio" name="gametype" value="random"  id="randombtn" /><label for="randombtn">Random (Hard)</label>
+			</p><br>
+			<h3>Random Seed</h3>
+			<p>Use this input to be able to re-create the board later on. Leave empty to use the current time as seed.</p>
+			<label for="boardseed">Random seed </label>
+			<input type="text" name="boardseed" id="boardseed" value="" /><br><br>
+		</div>
+		<div id="right-start-col">
+			<h3>Player Count</h3>
+			<img src="img/decrement.png" alt="-" id="decrementplayers" />
+			<img src="img/increment.png" alt="+" id="incrementplayers" />
+			<p>
+			<label for="players" style="vertical-align: center; display: none;">Number of players </label>
+			<input type="text" name="nrplayers" id="nrplayers" value="3" style="width: 20%; vertical-align: center; display: none;" />
+
+			</p><br>
+			<h3>Player Names</h3>
+			<p>
+			<input type="text" name="player0" id="player0" value="Thijs" style="margin-bottom: 5px;"/><br />
+			<input type="text" name="player1" id="player1" value="Player 1" style="margin-bottom: 5px;"/><br />
+			<input type="text" name="player2" id="player2" value="Player 2" style="margin-bottom: 5px;"/><br />
+			<input type="text" name="player3" id="player3" value="Player 3" />
+			</p>
+		</div>
+		</div>
+	</div>
+  </div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+		<script type="text/javascript">
+			game = new catan_game(gui, app.sendData);
+			app.initialize();
+			app.registerUpdate(game.update_btle);
+			app.registerButtonDown(game.button_down);
+			app.registerButtonUp(game.button_up);
+		</script>
+ </body>
+</html>
