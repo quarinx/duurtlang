@@ -27,19 +27,21 @@ var gui = {
         gui.dice1 = new dice($('#dice1'));
         dice1.juggleinterval = 30; // Set different than 0, maybe someone will notice...
 
-        document.getElementById('nrplayers').onkeyup=gui.update_players;
-        document.getElementById('decrementplayers').onclick=gui.decrementplayers;
-        document.getElementById('incrementplayers').onclick=gui.incrementplayers;
-        document.getElementById('startgame').onclick=gui.new_game;
-        document.getElementById('closenew').onclick=gui.new_game_close;
-        document.getElementById('opennew').onclick=gui.new_game_open;
+        document.getElementById('nrplayers').onkeyup = gui.update_players;
+        document.getElementById('decrementplayers').onclick = gui.decrementplayers;
+        document.getElementById('incrementplayers').onclick = gui.incrementplayers;
+        document.getElementById('startgame').onclick = gui.new_game;
+        document.getElementById('closenew').onclick = gui.new_game_close;
+        document.getElementById('opennew').onclick = gui.new_game_open;
+		document.getElementById('openset').onclick = gui.settings_open;
+		document.getElementById('closeset').onclick = gui.settings_close;
         
         /* Game is not yet available when this code is parsed. Therefore, use an anonymous function to wrap. */
         document.getElementById('dice0').ontouchstart = function () { game.button_down()};
         document.getElementById('dice0').ontouchend = function () { game.button_up()};
         document.getElementById('dice1').ontouchstart = function () { game.button_down()};
         document.getElementById('dice1').ontouchend = function () { game.button_up()};
-        document.getElementById('tail').onclick=gui.toggle_tail;
+        document.getElementById('tail').onclick = gui.toggle_tail;
         
         document.getElementById('brightness').onchange = function () { var brightness = document.getElementById('brightness').value; app.sendBrightness(brightness); game.update_btle()};
         document.getElementById('onbutton').onclick = function () { app.sendPower(1)};
@@ -226,6 +228,16 @@ var gui = {
      
     new_game_open: function() {
         var playerwindow = $('#newgame');
+        playerwindow.css('display', 'inline');
+    },
+
+    settings_close: function() {
+        var playerwindow = $('#settings_page');
+        playerwindow.css('display', 'none');
+    },
+	
+	settings_open: function() {
+        var playerwindow = $('#settings_page');
         playerwindow.css('display', 'inline');
     },
     

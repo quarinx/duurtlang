@@ -25,40 +25,55 @@
  </head>
  <body>
   <div id="leftcol">
-	<img src="img/menu.png" alt="-" id="menu" style="height:40px; width: 40px; padding: 10px;"/>
+	<img src="img/menu.png" alt="-" id="openset" style="height:40px; width: 40px; padding: 10px; float:left; margin-top: 10px; margin-right: 20px;"/>
+	<span id="nextturn"></span>
+	<!--<div id="svgboard" style="float:left;">&nbsp;</div>-->
+	<span id="opennew">New Game!</span>
 	<h1>CATAN</h1>
 	<h2>- High Nicety Edition -</h2>
     <div id="dicewrap" style="margin-left: 5%; margin-top: 30px;">
      <div id="dice0"></div>
      <div id="dice1"></div>
     </div>
-    <div id="nextturn"></div>
-    <div id="svgboard">&nbsp;</div>
-    <div id="opennew">New Game!</div>
   </div>
   <div id="rightcol">
     <div id="chartContainer" style="height: 75%; width: 100%; float: left; background-color: white"><canvas id="myChart" width="400" height="200"></canvas></div>
   </div>
-  <div id="config" style="width: 100%; float: left">
-    
-    <p>Brightness: <input type="range" id="brightness" min="0" max="255" step="1" value="255" /></p>
-    <input type="button" id="onbutton" value="On!" />
-    <input type="button" id="offbutton" value="Off?" />
-    </div>
-  </div>
-  <div id="status" style="width: 100%; float: left">
-    Battery level: <progress min="0" max="255" id="battery" value="80" />
-    <div id="state_connected">Disconnected...</div>
-  </div>
-  <div id="statsdiv">
-      <!-- WORK IN PROGRESS...table id="stats" class="stats" cellspacing="0" width="100%">
-          <thead><tr><th>Player</th><th>Start throw</th><th>Round 0</th></tr></thead>
-          <tr><td>Player 0</td><td>11</td><td>0</td></tr>
-      </table-->
-  </div>
-  <div id="tail">
+  
+  <div id="tail" style="display: none;">
     <div>Logging started.</div>
   </div>
+  
+	<div id="settings_page" class="gameset">
+	  <div class="gameset-content">
+		<div style="width: 100%;">
+			<h1 style="float:left; width: 70%; font-size: 200%; margin-top: 0px; margin-bottom: 10px; text-align:left;">Settings</h1>
+			<input type="submit" id="closeset"  value="Close" style="float:right;">
+		</div>
+		<div id="config" style="width: 100%; float: left">
+
+			<h3>Brightness</h3> 
+			<input type="range" id="brightness" min="0" max="255" step="1" value="255" />    		
+			
+			<h3>Power</h3>
+			<input type="button" id="onbutton" value="On!" />
+			<input type="button" id="offbutton" value="Off?" />
+			
+			<h3>Battery level</h3>
+			<progress min="0" max="255" id="battery" value="80" />
+			
+			
+			<div id="state_connected">Disconnected...</div>
+		</div>
+		
+		<div id="statsdiv">
+			<!-- WORK IN PROGRESS...table id="stats" class="stats" cellspacing="0" width="100%">
+			<thead><tr><th>Player</th><th>Start throw</th><th>Round 0</th></tr></thead>
+			<tr><td>Player 0</td><td>11</td><td>0</td></tr>
+			</table-->
+		</div>
+	  </div>
+	</div>
   
     <!-- New Game -->
     <div id="newgame" class="newgame">
@@ -66,7 +81,7 @@
       <!-- Modal content -->
       <div class="newgame-content">
 		<div style="width: 100%;">
-			<h1 style="float:left; width: 70%; font-size: 200%; margin-top: 5px; margin-bottom: 10px; text-align:left;">New game</h1>
+			<h1 style="float:left; width: 70%; font-size: 200%; margin-top: 0px; margin-bottom: 10px; text-align:left;">New game</h1>
 			<input type="submit" id="closenew"  value="Close" style="float:right;">
 			<input type="submit" id="startgame" value="Start" style="float:right;">
 		</div>

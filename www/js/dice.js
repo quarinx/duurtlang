@@ -9,7 +9,7 @@ function dice(element) {
     m_this.juggling = false;
     m_this.juggleinterval = 25;
     
-    this.glyphSize = 120;
+    this.glyphSize = 150;
     
     this._set_face = function(value) {
         var xpos, ypos;
