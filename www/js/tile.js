@@ -95,7 +95,7 @@ function tile(number, resource) {
         var data = new Uint8Array(BLE_LENGTH);
         data[BLE_TILE] = tile_idx;
         data[BLE_NUMBER] = this_tile.number;
-        data[BLE_NUM_INT] = 0xB0; //parseInt(255 * this_tile.intensity);
+        data[BLE_NUM_INT] = parseInt(255 * this_tile.intensity);
         data[BLE_NUM_R] = color[0];
         data[BLE_NUM_G] = color[1];
         data[BLE_NUM_B] = color[2];
