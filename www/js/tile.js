@@ -16,7 +16,7 @@ var tile_config = {
         'Alu_7075'          : [  0,   0, 255],  // Wit
         'Ziptie'            : [  0, 255,   0],  // Groen
     },
-    Sea_color : [0, 0, 255],
+    Sea_color : [128, 128, 128],
     Sea_intensity : 1.0,
     dimmed_intensity : 0.1,
     highlighted_intensity : 1.0,
@@ -95,7 +95,7 @@ function tile(number, resource) {
         var data = new Uint8Array(BLE_LENGTH);
         data[BLE_TILE] = tile_idx;
         data[BLE_NUMBER] = this_tile.number;
-        data[BLE_NUM_INT] = 0xFF; //parseInt(255 * this_tile.intensity);
+        data[BLE_NUM_INT] = 0xB0; //parseInt(255 * this_tile.intensity);
         data[BLE_NUM_R] = color[0];
         data[BLE_NUM_G] = color[1];
         data[BLE_NUM_B] = color[2];
