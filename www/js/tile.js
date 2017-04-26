@@ -95,7 +95,7 @@ function tile(number, resource) {
         var data = new Uint8Array(BLE_LENGTH);
         data[BLE_TILE] = tile_idx;
         data[BLE_NUMBER] = this_tile.number;
-        data[BLE_NUM_INT] = parseInt(255 * this_tile.intensity);
+        data[BLE_NUM_INT] = 0xFF; //parseInt(255 * this_tile.intensity);
         data[BLE_NUM_R] = color[0];
         data[BLE_NUM_G] = color[1];
         data[BLE_NUM_B] = color[2];
@@ -107,11 +107,13 @@ function tile(number, resource) {
         data[BLE_SEA_R] = tile_config.Sea_color[0];
         data[BLE_SEA_G] = tile_config.Sea_color[1];
         data[BLE_SEA_B] = tile_config.Sea_color[2];
+        
+        data[BLE_UPDATE] = 0x00;
         if(last) {
-            data[BLE_UPDATE] = 1;
+            data[BLE_UPDATE] += 0x01;
         }
-        else {
-            data[BLE_UPDATE] = 0;
+        if(this_tile.highlight) {
+            data[BLE_UPDATE] += 0x08;
         }
         this_tile.update = false;
         

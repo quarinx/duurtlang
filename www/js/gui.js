@@ -36,6 +36,13 @@ var gui = {
 		document.getElementById('openset').onclick = gui.settings_open;
 		document.getElementById('closeset').onclick = gui.settings_close;
         
+        
+        document.getElementById('mode0').onclick = function () { app.setSpecialMode(0) ; };
+        document.getElementById('mode1').onclick = function () { app.setSpecialMode(1) ; };
+        document.getElementById('mode2').onclick = function () { app.setSpecialMode(2) ; };
+        document.getElementById('mode3').onclick = function () { app.setSpecialMode(3) ; };
+        document.getElementById('mode4').onclick = function () { app.setSpecialMode(4) ; };
+        
         /* Game is not yet available when this code is parsed. Therefore, use an anonymous function to wrap. */
         document.getElementById('dice0').ontouchstart = function () { game.button_down()};
         document.getElementById('dice0').ontouchend = function () { game.button_up()};

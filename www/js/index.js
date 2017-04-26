@@ -24,7 +24,8 @@ var app = {
         tile: 'A001',
         brightness: 'A002',
         power: 'A003',
-        battery : 'A004'
+        battery : 'A004',
+        special : 'A005'
     },
     button: {
         service: 'B000',
@@ -216,5 +217,21 @@ var app = {
             app.onButtonDown();
         }
     },
+    
+    setSpecialMode: function (mode) {
+        app.logStatus('Party mode! ' + mode);
+        if(app.peripheral_id != 0)
+        {
+            var data = new Uint8Array(1);
+            data[0] = mode;
+            ble.write(
+                app.peripheral_id,
+                app.led.service,
+                app.led.special,
+                data.buffer, app.onSuccess, app.onFailure
+            );
+        }
+    },
+    
 };
 
