@@ -9,11 +9,11 @@ var SEG_ON  = [255, 0, 0];
 
 var tile_config = {
     Resource_colors : {
-        'Woestijn'          : [160,  80,   0],  // Oranje
-        'Bremsenspriets'    : [128, 128,   0],  // Geel
+        'Woestijn'          : [255, 255, 175],  // Oranje
+        'Bremsenspriets'    : [255, 255,   0],  // Geel
         'Carbon'            : [255,   0,   0],  // Rood
-        'Rozebutt'          : [120,  60,  60],  // Roze
-        'Alu_7075'          : [ 90,  90,  90],  // Wit
+        'Rozebutt'          : [255,   0, 153],  // Roze
+        'Alu_7075'          : [  0,   0, 255],  // Wit
         'Ziptie'            : [  0, 255,   0],  // Groen
     },
     Sea_color : [0, 0, 255],
