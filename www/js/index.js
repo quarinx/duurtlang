@@ -99,11 +99,11 @@ var app = {
         app.logStatus('Connected to ' + peripheral.id);
         
         // Assuming that BLE Cental always returns lower case
-        if(peripheral.services.includes(app.led.service.toLowerCase())) {
+        if(peripheral.services.includes(app.led.service)) {
             app.peripheral_id = peripheral.id;
             window.setTimeout(app.onConnectCallback, 10);
         } 
-        else if(peripheral.services.includes(app.button.service.toLowerCase())) {
+        else if(peripheral.services.includes(app.button.service)) {
             app.button_id = peripheral.id;
             ble.startNotification(peripheral.id, 
                                   app.button.service,
@@ -113,7 +113,7 @@ var app = {
                                       app.logStatus('Error from button');
                                     });
         }
-        else if(peripheral.services.includes(app.dice.service.toLowerCase())) {
+        else if(peripheral.services.includes(app.dice.service)) {
             app.logStatus('Sorry, no dice support yet');
         }
         else {
